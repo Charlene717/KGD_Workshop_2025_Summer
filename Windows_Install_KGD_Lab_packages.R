@@ -1,7 +1,8 @@
 # Ref: https://chatgpt.com/c/6805e0a5-bdf8-8002-a169-612b25c3bff1
-if(!require('devtools')) {install.packages('devtools'); library(devtools)}
 
-# 套件與版本配對（直觀呈現）
+
+#### 基本套件安裝 ####
+# 套件與版本配對
 package_versions <- list(
   abind       = "1.4-8",
   annotate    = "1.72.0",
@@ -100,7 +101,9 @@ for (pkg in names(package_versions)) {
   install_specific_version(pkg, package_versions[[pkg]])
 }
 
-# 額外套件（版本明確）
+#### devtools 套件安裝 ####
+if(!require('devtools')) {install.packages('devtools'); library(devtools)}
+
 devtools::install_version("Matrix", version = "1.6.4", lib = install_path)
 devtools::install_version("TFisher", version = "0.2.0", lib = install_path)
 devtools::install_version("parallelly", version = "1.43.0", lib = install_path)
@@ -109,10 +112,12 @@ devtools::install_version("Seurat", version = "4.3.0", lib = install_path)
 devtools::install_version("tidyverse", version = "2.0.0", lib = install_path)
 devtools::install_version("ggpubr", version = "0.6.0", lib = install_path)
 
-# Bioconductor 套件安裝（fgsea、CelliD）
+#### Bioconductor 套件安裝 ####
 if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
+
 BiocManager::install("fgsea")
 BiocManager::install("CelliD", version = "3.18", lib = install_path, dependencies = TRUE, update = FALSE)
 
-# 顯示目前已安裝的版本
+
+#### 顯示目前已安裝的版本 ####
 as.data.frame(installed.packages()[, c("Package", "Version")])
