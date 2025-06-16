@@ -8,6 +8,10 @@ if(!require('devtools')) {install.packages('devtools'); library(devtools)}
 # ❌ DESeq2 (1.34.0)
 # ❌ DoubletFinder (2.0.4)
 
+# ❌ genefilter (1.76.0)
+# ❌ geneplotter (1.72.0)
+# ❌ GEOquery (2.62.2)
+# ❌ HDF5Array (1.22.1)
 
 # 套件與版本配對
 package_versions <- list(
