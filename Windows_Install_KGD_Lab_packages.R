@@ -115,7 +115,7 @@ devtools::install_version("ggpubr", version = "0.6.0", lib = install_path)
 #### Bioconductor 套件安裝 ####
 if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
 
-BiocManager::install("fgsea")
+BiocManager::install("fgsea", version = "1.20.0", dependencies = TRUE, update = FALSE)
 BiocManager::install("CelliD", version = "3.18", lib = install_path, dependencies = TRUE, update = FALSE)
 
 
