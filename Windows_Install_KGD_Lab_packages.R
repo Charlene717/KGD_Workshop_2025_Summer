@@ -83,15 +83,12 @@ package_versions <- list(
   zoo         = "1.8-12"
 )
 
-# 指定安裝路徑
-install_path <- "C:/R/library"  # ← Windows 路徑請依實際修改
-.libPaths(c(install_path, .libPaths()))
 
 # 安裝函數
 install_specific_version <- function(pkg, ver) {
   tryCatch({
     if (!requireNamespace(pkg, quietly = TRUE) || as.character(packageVersion(pkg)) != ver) {
-      devtools::install_version(pkg, version = ver, lib = install_path, upgrade = "never", dependencies = TRUE)
+      devtools::install_version(pkg, version = ver, upgrade = "never", dependencies = TRUE)
     }
   }, error = function(e) message(sprintf("❌ %s (%s)", pkg, ver)))
 }
@@ -104,19 +101,19 @@ for (pkg in names(package_versions)) {
 #### devtools 套件安裝 ####
 if(!require('devtools')) {install.packages('devtools'); library(devtools)}
 
-devtools::install_version("Matrix", version = "1.6.4", lib = install_path)
-devtools::install_version("TFisher", version = "0.2.0", lib = install_path)
-devtools::install_version("parallelly", version = "1.43.0", lib = install_path)
-devtools::install_version("promises", version = "1.3.2", lib = install_path)
-devtools::install_version("Seurat", version = "4.3.0", lib = install_path)
-devtools::install_version("tidyverse", version = "2.0.0", lib = install_path)
-devtools::install_version("ggpubr", version = "0.6.0", lib = install_path)
+devtools::install_version("Matrix", version = "1.6.4")
+devtools::install_version("TFisher", version = "0.2.0")
+devtools::install_version("parallelly", version = "1.43.0")
+devtools::install_version("promises", version = "1.3.2")
+devtools::install_version("Seurat", version = "4.3.0")
+devtools::install_version("tidyverse", version = "2.0.0")
+devtools::install_version("ggpubr", version = "0.6.0")
 
 #### Bioconductor 套件安裝 ####
 if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
 
 BiocManager::install("fgsea", version = "1.20.0", dependencies = TRUE, update = FALSE)
-BiocManager::install("CelliD", version = "3.18", lib = install_path, dependencies = TRUE, update = FALSE)
+BiocManager::install("CelliD", version = "3.18",  dependencies = TRUE, update = FALSE)
 
 
 #### 顯示目前已安裝的版本 ####
