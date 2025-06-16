@@ -1,11 +1,17 @@
 # Ref: https://chatgpt.com/c/6805e0a5-bdf8-8002-a169-612b25c3bff1
+if(!require('devtools')) {install.packages('devtools'); library(devtools)}
 
 
-#### 基本套件安裝 ####
+#### 套件安裝 ####
+# ❌ BiocIO (1.4.0)c
+# ❌ biomaRt (2.50.3)
+# ❌ DESeq2 (1.34.0)
+# ❌ DoubletFinder (2.0.4)
+
+
 # 套件與版本配對
 package_versions <- list(
   abind       = "1.4-8",
-  annotate    = "1.72.0",
   askpass     = "1.1",
   BH          = "1.87.0-1",
   BiocIO      = "1.4.0",
@@ -112,7 +118,9 @@ devtools::install_version("ggpubr", version = "0.6.0")
 #### Bioconductor 套件安裝 ####
 if (!requireNamespace("BiocManager", quietly = TRUE)) install.packages("BiocManager")
 
-BiocManager::install("fgsea", version = "1.20.0", dependencies = TRUE, update = FALSE)
+BiocManager::install("annotate")
+BiocManager::install("annotate", version = "3.17",  dependencies = TRUE, update = FALSE)
+BiocManager::install("fgsea")
 BiocManager::install("CelliD", version = "3.18",  dependencies = TRUE, update = FALSE)
 
 
