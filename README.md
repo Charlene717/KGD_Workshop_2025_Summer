@@ -1,11 +1,11 @@
 
-# 🧬 scRNA-seq Workshop 實作範例流程
+# 🧬 scRNA-seq Workshop Practical Workflow
 
-本實作流程涵蓋單細胞轉錄體分析的整體流程，包含資料前處理、雙細胞去除、資料整合、細胞註解、細胞通訊與發展軌跡分析等，皆以簡潔 R 語法示範。
+This practical workflow demonstrates key steps in single-cell RNA sequencing (scRNA-seq) analysis, including data preprocessing, doublet removal, sample integration, cell annotation, cell-cell communication, and pseudotime analysis. The R code examples are simplified for hands-on training.
 
 ---
 
-## 📦 1. 資料讀取與前處理（Seurat）
+## 📦 1. Data Loading and Preprocessing (Seurat)
 
 ```r
 library(Seurat)
@@ -23,7 +23,7 @@ seurat_2901 <- subset(seurat_2901, subset = nFeature_RNA > 200 & nFeature_RNA < 
 
 ---
 
-## ❌ 2. 雙細胞過濾（DoubletFinder）
+## ❌ 2. Doublet Removal (DoubletFinder)
 
 ```r
 library(DoubletFinder)
@@ -52,7 +52,7 @@ seurat_2901 <- subset(seurat_2901, subset = DF.classifications == "Singlet")
 
 ---
 
-## 🔗 3. 多樣本資料整合
+## 🔗 3. Integration of Multiple Samples
 
 ```r
 # Merge multiple samples
@@ -81,7 +81,7 @@ integrated <- FindNeighbors(integrated, dims = 1:30) %>% FindClusters(resolution
 
 ---
 
-## 🧾 4. 細胞註解（SingleR + 標記基因）
+## 🧾 4. Cell Type Annotation (SingleR + Marker Genes)
 
 ```r
 library(SingleR); library(celldex)
@@ -100,7 +100,7 @@ DotPlot(integrated, features = c("KRT14", "CD3D", "PECAM1")) + RotatedAxis()
 
 ---
 
-## 🔁 5. 細胞通訊分析（CellChat）
+## 🔁 5. Cell-Cell Communication Analysis (CellChat)
 
 ```r
 library(CellChat)
@@ -123,7 +123,7 @@ netVisual_circle(cellchat@net$count)
 
 ---
 
-## ⏳ 6. 發展軌跡分析（Monocle2）
+## ⏳ 6. Pseudotime Analysis (Monocle2)
 
 ```r
 library(monocle)
