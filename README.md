@@ -29,7 +29,10 @@ seurat_2901 <- subset(seurat_2901, subset = nFeature_RNA > 200 & nFeature_RNA < 
 library(DoubletFinder)
 
 # Standard Seurat preprocessing steps
-seurat_2901 <- NormalizeData(seurat_2901) %>% FindVariableFeatures() %>% ScaleData() %>% RunPCA()
+seurat_2901 <- NormalizeData(seurat_2901)
+seurat_2901 <- FindVariableFeatures(seurat_2901)
+seurat_2901 <- ScaleData(seurat_2901)
+seurat_2901 <- RunPCA(seurat_2901)
 seurat_2901 <- FindNeighbors(seurat_2901, dims = 1:30)
 seurat_2901 <- FindClusters(seurat_2901)
 seurat_2901 <- RunUMAP(seurat_2901, dims = 1:30)
