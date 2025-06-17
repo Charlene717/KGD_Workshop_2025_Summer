@@ -30,12 +30,12 @@ library(DoubletFinder)
 
 # Standard Seurat preprocessing steps
 seurat_2901 <- NormalizeData(seurat_2901) %>% FindVariableFeatures() %>% ScaleData() %>% RunPCA()
-seurat_2901 <- FindNeighbors(seurat_2901, dims = 1:20)
+seurat_2901 <- FindNeighbors(seurat_2901, dims = 1:30)
 seurat_2901 <- FindClusters(seurat_2901)
-seurat_2901 <- RunUMAP(seurat_2901, dims = 1:20)
+seurat_2901 <- RunUMAP(seurat_2901, dims = 1:30)
 
 # Determine optimal pK
-sweep_res <- paramSweep(seurat_2901, PCs = 1:20)
+sweep_res <- paramSweep(seurat_2901, PCs = 1:30)
 sweep_stats <- summarizeSweep(sweep_res)
 best_pk <- find.pK(sweep_stats)
 pK <- as.numeric(as.character(best_pk[which.max(best_pk$BCmetric), "pK"]))
@@ -46,7 +46,7 @@ homotypic.prop <- modelHomotypic(annotations)
 nExp <- round(0.08 * nrow(seurat_2901@meta.data) * (1 - homotypic.prop))
 
 # Predict and remove doublets
-seurat_2901 <- doubletFinder(seurat_2901, PCs = 1:20, pN = 0.25, pK = pK, nExp = nExp)
+seurat_2901 <- doubletFinder(seurat_2901, PCs = 1:30, pN = 0.25, pK = pK, nExp = nExp)
 seurat_2901 <- subset(seurat_2901, subset = DF.classifications == "Singlet")
 ```
 
