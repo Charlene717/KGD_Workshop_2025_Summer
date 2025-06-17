@@ -3,7 +3,7 @@ if(!require('devtools')) {install.packages('devtools'); library(devtools)}
 
 
 #### 套件安裝 ####
-# ❌ BiocIO (1.4.0)c
+# ❌ BiocIO (1.4.0)
 # ❌ biomaRt (2.50.3)
 # ❌ DESeq2 (1.34.0)
 # ❌ DoubletFinder (2.0.4)
