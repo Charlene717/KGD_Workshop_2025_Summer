@@ -29,13 +29,15 @@ seurat_2901 <- subset(seurat_2901, subset = nFeature_RNA > 200 & nFeature_RNA < 
 library(DoubletFinder)
 
 # Standard Seurat preprocessing steps
-seurat_2901 <- NormalizeData(seurat_2901)
-seurat_2901 <- FindVariableFeatures(seurat_2901)
-seurat_2901 <- ScaleData(seurat_2901)
+seurat_2901 <- NormalizeData(seurat_2901, normalization.method = "LogNormalize", scale.factor = 10000)
+seurat_2901 <- FindVariableFeatures(seurat_2901, selection.method = "vst", nfeatures = 2000)
+seurat_2901 <- ScaleData(seurat_2901, features = rownames(seurat_2901), verbose = TRUE)
 seurat_2901 <- RunPCA(seurat_2901)
+ElbowPlot(seurat_2901)
 seurat_2901 <- FindNeighbors(seurat_2901, dims = 1:30)
 seurat_2901 <- FindClusters(seurat_2901)
 seurat_2901 <- RunUMAP(seurat_2901, dims = 1:30)
+DimPlot(seurat_2901, reduction = "umap", label = T)
 
 # Determine optimal pK
 sweep_res <- paramSweep(seurat_2901, PCs = 1:30)
@@ -65,10 +67,14 @@ seurat_all <- merge(seurat_2901, y = list(seurat_3080, seurat_3116, seurat_3138)
 seurat_list <- SplitObject(seurat_all, split.by = "orig.ident")
 
 # Normalize and score cell cycle for each sample
-seurat_list <- lapply(seurat_list, function(obj) {
-  obj <- NormalizeData(obj) %>% FindVariableFeatures() %>% ScaleData()
-  CellCycleScoring(obj, s.features = cc.genes$s.genes, g2m.features = cc.genes$g2m.genes)
+seurat_list <- lapply(X = seurat_list, FUN = function(x) {
+  x <- NormalizeData(x,normalization.method = "LogNormalize", scale.factor = 10000)
+  x <- FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000)
+  x <- ScaleData(x, features = rownames(x), verbose = TRUE)
+  x <- CellCycleScoring(x, s.features = s.genes, g2m.features = g2m.genes, set.ident = FALSE)
 })
+
+
 
 # Data integration
 features <- SelectIntegrationFeatures(seurat_list)
