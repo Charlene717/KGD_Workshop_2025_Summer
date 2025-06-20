@@ -4,7 +4,8 @@ library(ggplot2)
 
 data_2901 <- Read10X("C:/Users/q2330/Dropbox/##_GitHub/##_KGD_Lab/KGD_Workshop_2025_Summer/Input_dataset/TN125_Keloid/")
 
-seurat_2901 <- CreateSeuratObject(counts = data_2901, min.cells = 3, min.features = 200)
+seurat_2901 <- CreateSeuratObject(counts = data_2901, project = "HC2901",
+                                  min.cells = 3, min.features = 200)
 
 # Calculate mitochondrial gene percentage and perform quality control
 seurat_2901[["percent.mt"]] <- PercentageFeatureSet(seurat_2901, pattern = "^MT-")
