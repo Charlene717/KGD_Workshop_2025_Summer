@@ -24,7 +24,6 @@ g2m.genes <- cc.genes$g2m.genes
 
 # Normalize and score cell cycle for each sample
 seurat_list <- lapply(X = seurat_list, FUN = function(x) {
-  DefaultAssay(x) <- "RNA" # <== 新增這行，設定 RNA 為活性 assay
   x <- NormalizeData(x,normalization.method = "LogNormalize", scale.factor = 10000)
   x <- FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000)
   x <- ScaleData(x, features = rownames(x), verbose = TRUE)
