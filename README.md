@@ -51,8 +51,13 @@ homotypic.prop <- modelHomotypic(annotations)
 nExp <- round(0.08 * nrow(seurat_2901@meta.data) * (1 - homotypic.prop))
 
 # Predict and remove doublets
-seurat_2901 <- doubletFinder(seurat_2901, PCs = 1:30, pN = 0.25, pK = pK, nExp = nExp)
-seurat_2901 <- subset(seurat_2901, subset = DF.classifications == "Singlet")
+seurat_2901 <- doubletFinder(seurat_2901, PCs = 1:30, pN = 0.25, pK = pK, nExp = nExp) # Run DoubletFinder with specified parameters
+df_col <- grep("^DF\\.classifications", colnames(seurat_2901@meta.data), value = TRUE)[1] # Identify the metadata column that starts with "DF.classifications"
+DimPlot(seurat_2901, reduction = 'umap', group.by = df_col) # Visualize UMAP colored by doublet classification
+table(seurat_2901@meta.data[[df_col]]) # Display count of Singlet vs Doublet classifications
+seurat_2901 <- seurat_2901[, seurat_2901@meta.data[[df_col]] == "Singlet"] # Subset the object to retain only singlet cells
+DimPlot(seurat_2901, reduction = "umap", group.by = df_col) # Re-visualize UMAP after singlet filtering
+seurat_2901 # View the resulting Seurat object
 ```
 
 ---
