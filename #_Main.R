@@ -9,9 +9,6 @@ source("Sample_2901.R")
 source("Sample_3080.R")
 
 
-# seurat_2901 <- JoinLayers(seurat_2901)
-# seurat_3080 <- JoinLayers(seurat_3080)
-
 # Merge multiple samples
 seurat_all <- merge(seurat_2901, y = list(seurat_3080),
                     add.cell.ids = c("HC2901","HC3080"))
@@ -27,7 +24,6 @@ g2m.genes <- cc.genes$g2m.genes
 
 # Normalize and score cell cycle for each sample
 seurat_list <- lapply(X = seurat_list, FUN = function(x) {
-  # x <- JoinLayers(x)
   DefaultAssay(x) <- "RNA" # <== 新增這行，設定 RNA 為活性 assay
   x <- NormalizeData(x,normalization.method = "LogNormalize", scale.factor = 10000)
   x <- FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000)
