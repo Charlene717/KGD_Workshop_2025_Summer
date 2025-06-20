@@ -5,11 +5,13 @@ library(dplyr)
 library(ggplot2)
 
 
+
+#### Data Loading and Preprocessing ####
 source("Sample_2901.R")
 source("Sample_3080.R")
 
 
-# Merge multiple samples
+#### Merge multiple samples ####
 seurat_all <- merge(seurat_2901, y = list(seurat_3080),
                     add.cell.ids = c("HC2901","HC3080"))
 
@@ -43,3 +45,20 @@ integrated <- RunPCA(integrated, npcs = 50) %>% RunUMAP(dims = 1:30)
 integrated <- FindNeighbors(integrated, dims = 1:30) %>% FindClusters(resolution = 0.3)
 
 DimPlot(integrated, reduction = "umap")
+
+
+#### Cell Type Annotation ####
+library(SingleR); library(celldex)
+hpca <- HumanPrimaryCellAtlasData()
+counts <- GetAssayData(integrated, slot = "data")
+
+pred <- SingleR(test = counts, ref = hpca, labels = hpca$label.main)
+
+# View results
+table(pred$pruned.labels)
+
+# DotPlot to display marker genes
+DefaultAssay(integrated) <- "RNA"
+DotPlot(integrated, features = c("KRT14", "CD3D", "PECAM1")) + RotatedAxis()
+
+
