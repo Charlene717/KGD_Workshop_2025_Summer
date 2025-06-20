@@ -18,8 +18,13 @@ if(!require('celldex'))        { BiocManager::install('celldex');    library(cel
 if(!require('monocle'))        { BiocManager::install('monocle');    library(monocle) }
 
 #### 其他CRAN/外部套件 ####
-if(!require('DoubletFinder'))  { install.packages('DoubletFinder');  library(DoubletFinder) }
+if(!require('devtools'))        { install.packages('devtools');        library(devtools) }
+if(!require('DoubletFinder'))  { devtools::install_github('chris-mcginnis-ucsf/DoubletFinder');  library(DoubletFinder) }
+
 if(!require('CellChat'))       { install.packages('CellChat');       library(CellChat) }
+
+
+
 
 # ✅ CellChat 資料庫 (human)
 if(!"CellChatDB.human" %in% ls("package:CellChat")) {
