@@ -1,6 +1,13 @@
 
 
+if(!require('Seurat'))         { install.packages('Seurat');         library(Seurat) }
+if(!require('tidyverse'))      { install.packages('tidyverse');      library(tidyverse) }
+if(!require('dplyr'))          { install.packages('dplyr');          library(dplyr) }
+if(!require('ggplot2'))        { install.packages('ggplot2');        library(ggplot2) }
+
+
 library(Seurat)
+library(tidyverse)
 library(dplyr)
 library(ggplot2)
 
