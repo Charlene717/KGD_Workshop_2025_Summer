@@ -98,3 +98,7 @@ if (suppressWarnings(require("CellChat", character.only = TRUE))) {
 }
 
 message("✅ All required packages are now installed, loaded, and configured.")
+
+
+## Displays the currently installed version
+as.data.frame(installed.packages()[, c("Package", "Version")])
