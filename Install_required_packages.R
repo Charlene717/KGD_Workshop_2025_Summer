@@ -16,6 +16,10 @@ install_and_load <- function(pkg, install_fun) {
 }
 
 # ------------ CRAN packages -------------------------------------------------
+# if(!require('Seurat'))         { install.packages('Seurat');         library(Seurat) }
+# if(!require('tidyverse'))      { install.packages('tidyverse');      library(tidyverse) } 
+
+
 cran_pkgs <- c(
   "Seurat", "SeuratObject", "SeuratDisk",
   "tidyverse", "dplyr", "ggplot2", "patchwork",
@@ -25,7 +29,12 @@ cran_pkgs <- c(
 cran_install <- function(pkg)
   install.packages(pkg, repos = "https://cloud.r-project.org", quiet = TRUE)
 
+
 # ------------ Bioconductor packages -----------------------------------------
+# if(!require('SingleR'))        { BiocManager::install('SingleR');    library(SingleR) }
+# if(!require('celldex'))        { BiocManager::install('celldex');    library(celldex) }
+# if(!require('monocle'))        { BiocManager::install('monocle');    library(monocle) }
+
 bioc_pkgs <- c(
   "org.Hs.eg.db", "org.Mm.eg.db",
   "clusterProfiler", "enrichplot", "ReactomePA",
@@ -39,6 +48,10 @@ bioc_install <- function(pkg)
   BiocManager::install(pkg, ask = FALSE, update = FALSE, quiet = TRUE)
 
 # ------------ GitHub packages -----------------------------------------------
+# if(!require('DoubletFinder'))  { devtools::install_github('chris-mcginnis-ucsf/DoubletFinder');  library(DoubletFinder) }
+# if(!require('DoubletFinder'))  { remotes::install_github('chris-mcginnis-ucsf/DoubletFinder');  library(DoubletFinder) }
+
+
 github_repos <- c(
   "chris-mcginnis-ucsf/DoubletFinder",
   "sqjin/CellChat"
