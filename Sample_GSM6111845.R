@@ -2,7 +2,7 @@ library(Seurat)
 library(dplyr)
 library(ggplot2)
 
-data_3080 <- Read10X("C:/Users/q2330/Dropbox/##_GitHub/##_KGD_Lab/KGD_Workshop_2025_Summer/Input_dataset/TN131_Normal/")
+data_3080 <- Read10X("C:/Charlene/Dataset_KGD_Lab/scRNA-seq/10x/sample_filtered_feature_bc_matrix/GSM6111845_Normal_Sole/")
 
 seurat_3080 <- CreateSeuratObject(counts = data_3080, project = "HC3080",
                                   min.cells = 3, min.features = 200)
