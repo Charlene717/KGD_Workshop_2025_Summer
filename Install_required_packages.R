@@ -73,4 +73,15 @@ for (repo in github_repos) {
   }
 }
 
-message("✅ All required packages are now installed and loaded.")
+# ------------ CellChat Database (Human) -------------------------------------
+message("🛠️  Setting up CellChat human database ...")
+if (suppressWarnings(require("CellChat", character.only = TRUE))) {
+  if (!"CellChatDB.human" %in% ls("package:CellChat")) {
+    message("⚠️  Current CellChat version does not include 'CellChatDB.human'; consider upgrading the package.")
+  } else {
+    CellChat::CellChatDB <- CellChat::CellChatDB.human
+    message("✅ CellChatDB.human 已載入 (CellChat::CellChatDB)")
+  }
+}
+
+message("✅ All required packages are now installed, loaded, and configured.")
