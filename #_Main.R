@@ -1,16 +1,17 @@
+##### Presetting #####
+rm(list = ls()) # 清空變數
+memory.limit(150000)
 
-
+#### Load Packages ####
 if(!require('Seurat'))         { install.packages('Seurat');         library(Seurat) }
 if(!require('tidyverse'))      { install.packages('tidyverse');      library(tidyverse) }
 if(!require('dplyr'))          { install.packages('dplyr');          library(dplyr) }
 if(!require('ggplot2'))        { install.packages('ggplot2');        library(ggplot2) }
 
-
 library(Seurat)
 library(tidyverse)
 library(dplyr)
 library(ggplot2)
-
 
 
 #### Data Loading and Preprocessing ####
