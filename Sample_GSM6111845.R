@@ -141,7 +141,7 @@ DimPlot(seurat_GSM6111845, reduction = "umap") # 再次檢視過濾結果
 # -----------------------------------------------------------------------
 seurat_GSM6111845
 
-# (可選) 將物件儲存為 .rds 供後續流程載入
-# saveRDS(seurat_GSM6111845, file = "seurat_GSM6111845_singlets.rds")
+# 將物件儲存為 .rds 供後續流程載入
+saveRDS(seurat_GSM6111845, file = "seurat_GSM6111845_singlets.rds")
 
 ## =========================  End of Script  ==============================
