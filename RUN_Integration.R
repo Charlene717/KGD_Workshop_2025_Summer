@@ -95,7 +95,7 @@ if (Run_Demo_Merge) {
 # SplitObject() 只是「把大物件切片」，不會改變 data/matrix 內容。
 seurat_list <- SplitObject(
   seurat_all_merge,
-  split.by = "orig.ident"          # ← 依樣本來源欄位切分
+  split.by = "orig.ident"          # ← 依樣本來源欄位切分，可改為其他欄位(看要對什麼做批次效應校正)
 )
 
 #### 3-1 每個樣本單獨前處理 (Normalize → HVG → Scale → CellCycle) ####
