@@ -24,12 +24,11 @@ library(DoubletFinder)  # 同胞細胞（doublet）偵測
 # -----------------------------------------------------------------------
 # <※請依實際路徑調整※>
 data_dir <- "C:/Charlene/Dataset_KGD_Lab/scRNA-seq/10x/sample_filtered_feature_bc_matrix/GSM6111845_Normal_Sole/"
-
+data_GSM6111845 <- Read10X(data.dir = data_dir)
 
 # --------------------------
 # 2. 建立 Seurat 物件
 # --------------------------
-data_GSM6111845 <- Read10X(data.dir = data_dir)
 seurat_GSM6111845 <- CreateSeuratObject(
   counts = data_GSM6111845,    # 原始 UMI 計數矩陣
   project = "GSM6111845",     # 專案 ID 方便後續辨識
@@ -38,14 +37,13 @@ seurat_GSM6111845 <- CreateSeuratObject(
 ) 
 
 
-
 # --------------------------
 # 3. 品質控制 (QC)
 # --------------------------
 # 3A. 計算粒線體基因比例 (percent.mt)
 #     ▸ ^MT- 用於人類資料；若是小鼠請改成 ^Mt-*
-
 seurat_GSM6111845[["percent.mt"]] <- PercentageFeatureSet(seurat_GSM6111845, pattern = "^MT-")  # 新增線粒體基因比例欄位
+
 # 3B. 依下列條件過濾細胞：
 #     ▸ nFeature_RNA: 200–5,000 之間 (基因數過少可能是破裂細胞；過多可能是雙細胞)
 #     ▸ percent.mt : <30% (粒線體比例過高表示細胞壓力或破裂)
@@ -133,6 +131,8 @@ table(seurat_GSM6111845@meta.data[[df_col]]) # 統計 Singlet vs Doublet 數量
 seurat_GSM6111845 <- seurat_GSM6111845[, seurat_GSM6111845@meta.data[[df_col]] == "Singlet"] # 篩掉 Doublet 僅留 Singlet
 # 再次確認 UMAP 是否仍合理 (叢集形狀、密度)
 DimPlot(seurat_GSM6111845, reduction = "umap") # 再次檢視過濾結果
+
+
 
 # --------------------------
 # 6. 結果概覽
