@@ -1,12 +1,12 @@
 #### Data Integration ####
 
-## Merge multiple samples ####
-seurat_all <- merge(seurat_GSM6111844, y = list(seurat_GSM6111845,seurat_GSM6111847),
+## Merge multiple samples
+seurat_all_merge <- merge(seurat_GSM6111844, y = list(seurat_GSM6111845,seurat_GSM6111847),
                     add.cell.ids = c("GSM6111844","GSM6111845","GSM6111847"))
 
-seurat_all <- JoinLayers(seurat_all)  # 🔥 在 merge 後統一執行 JoinLayers
+seurat_all_merge <- JoinLayers(seurat_all_merge)  # 🔥 在 merge 後統一執行 JoinLayers
 
-seurat_list <- SplitObject(seurat_all, split.by = "orig.ident")
+seurat_list <- SplitObject(seurat_all_merge, split.by = "orig.ident")
 
 
 # cell cycle
@@ -25,12 +25,12 @@ seurat_list <- lapply(X = seurat_list, FUN = function(x) {
 # Data integration
 features <- SelectIntegrationFeatures(seurat_list)
 anchors <- FindIntegrationAnchors(seurat_list, dims = 1:30)
-integrated <- IntegrateData(anchors, dims = 1:30)
+seurat_all_integrated <- IntegrateData(anchors, dims = 1:30)
 
 # Dimensionality reduction and clustering
-DefaultAssay(integrated) <- "integrated"
-integrated <- ScaleData(integrated, vars.to.regress = c("S.Score", "G2M.Score", "percent.mt"))
-integrated <- RunPCA(integrated, npcs = 50) %>% RunUMAP(dims = 1:30)
-integrated <- FindNeighbors(integrated, dims = 1:30) %>% FindClusters(resolution = 0.3)
+DefaultAssay(seurat_all_integrated) <- "integrated"
+seurat_all_integrated <- ScaleData(seurat_all_integrated, vars.to.regress = c("S.Score", "G2M.Score", "percent.mt"))
+seurat_all_integrated <- RunPCA(seurat_all_integrated, npcs = 50) %>% RunUMAP(dims = 1:30)
+seurat_all_integrated <- FindNeighbors(seurat_all_integrated, dims = 1:30) %>% FindClusters(resolution = 0.3)
 
-DimPlot(integrated, reduction = "umap")
+DimPlot(seurat_all_integrated, reduction = "umap")
