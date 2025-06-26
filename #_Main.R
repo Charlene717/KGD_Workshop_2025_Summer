@@ -38,7 +38,7 @@ source("Sample_GSM6111847.R")
 
 
 #### Merge multiple samples ####
-seurat_all <- merge(GSM6111844, y = list(GSM6111845,GSM6111847),
+seurat_all <- merge(seurat_GSM6111844, y = list(seurat_GSM6111845,seurat_GSM6111847),
                     add.cell.ids = c("GSM6111844","GSM6111845","GSM6111847"))
 
 seurat_all <- JoinLayers(seurat_all)  # 🔥 在 merge 後統一執行 JoinLayers
