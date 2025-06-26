@@ -98,18 +98,25 @@ integrated <- FindNeighbors(integrated, dims = 1:30) %>% FindClusters(resolution
 ## 🧾 4. Cell Type Annotation (SingleR + Marker Genes)
 
 ```r
-library(SingleR); library(celldex)
-hpca <- HumanPrimaryCellAtlasData()
-counts <- GetAssayData(integrated, slot = "data")
+library(SingleR); library(celldex); library(Seurat); library(ggplot2)
 
-pred <- SingleR(test = counts, ref = hpca, labels = hpca$label.main)
+hpca   <- HumanPrimaryCellAtlasData()                                 # reference dataset
+counts <- GetAssayData(seurat_all_integrated, assay = "RNA", slot = "data")
 
-# View results
-table(pred$pruned.labels)
+pred <- SingleR(test = counts, ref = hpca, labels = hpca$label.main)  # automatic annotation
+seurat_all_integrated$Label_SingleR_HPCA <- pred$pruned.labels        # add to metadata
 
-# DotPlot to display marker genes
-DefaultAssay(integrated) <- "RNA"
-DotPlot(integrated, features = c("KRT14", "CD3D", "PECAM1")) + RotatedAxis()
+print(table(pred$pruned.labels))                                      # cell counts per label
+print(table(pred$pruned.labels, seurat_all_integrated@active.ident))  # label × cluster
+
+DimPlot(seurat_all_integrated, reduction = "umap",
+        group.by = "Label_SingleR_HPCA", label = TRUE, repel = TRUE) +
+  ggtitle("UMAP: SingleR (HPCA)")                                      # visualise on UMAP
+
+DefaultAssay(seurat_all_integrated) <- "RNA"
+DotPlot(seurat_all_integrated, features = c("KRT14", "CD3D", "PECAM1")) +
+  RotatedAxis()                                                       # marker overview
+
 ```
 
 ---
