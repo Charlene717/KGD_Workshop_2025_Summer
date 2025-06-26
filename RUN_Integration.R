@@ -4,7 +4,10 @@
 seurat_all_merge <- merge(seurat_GSM6111844, y = list(seurat_GSM6111845,seurat_GSM6111847),
                     add.cell.ids = c("GSM6111844","GSM6111845","GSM6111847"))
 
-seurat_all_merge <- JoinLayers(seurat_all_merge)  # 🔥 在 merge 後統一執行 JoinLayers
+# 合併層（僅限 Seurat ≥ 5）
+if (packageVersion("Seurat") >= "5.0.0") {
+  seurat_all_merge <- JoinLayers(seurat_all_merge) # 在 merge 後統一執行 JoinLayers
+}
 
 seurat_list <- SplitObject(seurat_all_merge, split.by = "orig.ident")
 
