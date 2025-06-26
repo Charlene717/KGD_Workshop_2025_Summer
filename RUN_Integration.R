@@ -56,4 +56,5 @@ seurat_all_integrated <- ScaleData(seurat_all_integrated, vars.to.regress = c("S
 seurat_all_integrated <- RunPCA(seurat_all_integrated, npcs = 50) %>% RunUMAP(dims = 1:30)
 seurat_all_integrated <- FindNeighbors(seurat_all_integrated, dims = 1:30) %>% FindClusters(resolution = 0.3)
 
-DimPlot(seurat_all_integrated, reduction = "umap")
+DimPlot(seurat_all_integrated, reduction = "umap") +
+  DimPlot(seurat_all_integrated, reduction = "umap", group.by = "orig.ident")
