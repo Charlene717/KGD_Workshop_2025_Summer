@@ -83,7 +83,7 @@ if (Run_Demo_Merge) {
   # -------- 2-8 可視化 --------------------------------------------------------
   # (A) 全樣本 UMAP；(B) 依 orig.ident 著色，檢視批次效應。
   DimPlot(seurat_all_merge, reduction = "umap") +
-    DimPlot(seurat_all_merge, reduction = "umap", group.by = "orig.ident")
+    DimPlot(seurat_all_merge, reduction = "umap", group.by = "orig.ident") %>% print()
 }
 
 ###############################################################################
@@ -179,14 +179,14 @@ seurat_all_integrated <- RunPCA(seurat_all_integrated, npcs = 50) %>%
 
 # 整合後的 UMAP：檢查不同批次是否成功重疊
 DimPlot(seurat_all_integrated, reduction = "umap") +
-  DimPlot(seurat_all_integrated, reduction = "umap", group.by = "orig.ident")
+  DimPlot(seurat_all_integrated, reduction = "umap", group.by = "orig.ident") %>% print()
 
 # 若有開啟 Demo，可同時把「合併/整合前後」放在一張圖方便比較
 if (Run_Demo_Merge) {
   DimPlot(seurat_all_merge, reduction = "umap") +
     DimPlot(seurat_all_merge, reduction = "umap", group.by = "orig.ident") +
     DimPlot(seurat_all_integrated, reduction = "umap") +
-    DimPlot(seurat_all_integrated, reduction = "umap", group.by = "orig.ident")
+    DimPlot(seurat_all_integrated, reduction = "umap", group.by = "orig.ident") %>% print()
 }
 
 ###############################################################################
