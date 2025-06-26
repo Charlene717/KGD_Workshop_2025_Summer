@@ -54,19 +54,19 @@ DefaultAssay(seurat_all_integrated) <- "RNA"
 DotPlot(seurat_all_integrated, features = c("KRT14", "CD3D", "PECAM1")) + RotatedAxis()
 
 
-#### DEG ####
+#### Differential Expression Gene (DEG) Analysis ####
 
 
 
-#### EA ####
+#### Enrichment Analysis ####
 
 
 
-#### CellChat ####
+#### CellChat Analysis ####
+source("RUN_CellChat.R")
 
 
-
-#### Trajectory analysis ####
+#### Trajectory Analysis ####
 
 
 
