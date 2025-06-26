@@ -13,6 +13,23 @@ library(tidyverse)
 library(dplyr)
 library(ggplot2)
 
+#### Set Parameter ####
+## Set Export 
+# Generate unique export parameters
+Set_Project <- "Keloid"
+
+Name_time_wo_micro <- substr(gsub("[- :]", "", as.character(Sys.time())), 1, 10) # Generate a unique time-based ID
+Name_FileID <- paste0(Name_time_wo_micro, paste0(sample(LETTERS, 3), collapse = ""))
+
+## Construct Set_note
+Set_note <- paste0(Name_FileID, "_", Set_Project)
+
+Name_Export <- paste0(Name_FileID)
+Name_ExportFolder <- paste0("Export_",Set_note)
+# Create export folder if it does not exist
+if (!dir.exists(Name_ExportFolder)){dir.create(Name_ExportFolder)}
+
+
 
 #### Data Loading and Preprocessing ####
 source("Sample_2901.R")
