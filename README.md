@@ -76,7 +76,7 @@ seurat_list <- lapply(X = seurat_list, FUN = function(x) {
   x <- NormalizeData(x,normalization.method = "LogNormalize", scale.factor = 10000)
   x <- FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000)
   x <- ScaleData(x, features = rownames(x), verbose = TRUE)
-  x <- CellCycleScoring(x, s.features = s.genes, g2m.features = g2m.genes, set.ident = FALSE)
+  x <- CellCycleScoring(x, s.features = cc.genes$s.genes, g2m.features = cc.genes$g2m.genes, set.ident = FALSE)
 })
 
 
