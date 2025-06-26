@@ -153,7 +153,7 @@ seurat_GSM6111845
 
 
 # 7A. 匯出 Seurat 物件 (RDS) — 將物件儲存為 .rds 供後續流程載入
-saveRDS(seurat_GSM6111845, file = paste0(Name_ExportFolder, "/", Name_Export, ".rds"))  # 單一 Seurat 物件；適合日後 readRDS() 載入
+saveRDS(seurat_GSM6111845, file = paste0(Name_ExportFolder, "/", Name_Export, "_GSM6111845_singlets.rds"))  # 單一 Seurat 物件；適合日後 readRDS() 載入
 
 # saveRDS(seurat_GSM6111845, file = "seurat_GSM6111845_singlets.rds")
 # saveRDS(seurat_GSM6111845, file = "C:/Charlene/Output/seurat_GSM6111845_singlets.rds")
