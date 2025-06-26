@@ -45,7 +45,6 @@ seurat_list <- lapply(X = seurat_list, FUN = function(x) {
 })
 
 
-
 features <- SelectIntegrationFeatures(seurat_list)
 anchors <- FindIntegrationAnchors(seurat_list, dims = 1:30)
 seurat_all_integrated <- IntegrateData(anchors, dims = 1:30)
@@ -58,3 +57,7 @@ seurat_all_integrated <- FindNeighbors(seurat_all_integrated, dims = 1:30) %>% F
 
 DimPlot(seurat_all_integrated, reduction = "umap") +
   DimPlot(seurat_all_integrated, reduction = "umap", group.by = "orig.ident")
+
+
+# 匯出 Seurat 物件 (RDS) — 將物件儲存為 .rds 供後續流程載入
+saveRDS(seurat_all_integrated, file = paste0(Name_ExportFolder, "/", Name_Export, "_Integration.rds"))  # 單一 Seurat 物件；適合日後 readRDS() 載入
