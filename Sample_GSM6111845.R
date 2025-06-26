@@ -141,7 +141,27 @@ DimPlot(seurat_GSM6111845, reduction = "umap") # 再次檢視過濾結果
 # -----------------------------------------------------------------------
 seurat_GSM6111845
 
+
+
+# --------------------------
+# 7. 物件儲存
+# --------------------------
 # 將物件儲存為 .rds 供後續流程載入
 saveRDS(seurat_GSM6111845, file = "seurat_GSM6111845_singlets.rds")
+
+
+## Export the Seurat object as an RDS file
+saveRDS(seuratObject_Sample, file = paste0(Name_ExportFolder,"/",Name_Export, ".rds"))
+
+## Export RData
+save.image(paste0(Name_ExportFolder,"/", Name_Export,".RData"))
+
+## Session Information 
+writeLines(capture.output(sessionInfo()), paste0(Name_ExportFolder,"/", Name_Export,"_session_info.txt"))
+sessionInfo()
+
+
+
+
 
 ## =========================  End of Script  ==============================
