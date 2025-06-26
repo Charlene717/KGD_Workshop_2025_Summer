@@ -13,6 +13,11 @@ library(tidyverse)
 library(dplyr)
 library(ggplot2)
 
+## KGD Lab 套件版本
+source("Install_required_packages_KGD_Lab.R")
+## 自動安裝最新版本套件
+source("Install_required_packages.R")
+
 #### Set Parameter ####
 ## Set Export 
 # Generate unique export parameters
