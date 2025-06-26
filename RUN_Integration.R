@@ -58,8 +58,8 @@ if (Run_Demo_Merge) {
   # 依預載的 s.genes / g2m.genes 打分，並將結果存入 meta.data$S.Score、$G2M.Score。
   seurat_all_merge <- CellCycleScoring(
     seurat_all_merge,
-    s.features   = s.genes,
-    g2m.features = g2m.genes,
+    s.features   = cc.genes$s.genes,
+    g2m.features = cc.genes$g2m.genes,
     set.ident    = FALSE                       # ← 不改變物件的 active.ident
   )
   
@@ -100,6 +100,9 @@ seurat_list <- SplitObject(
 
 #### 3-1 每個樣本單獨前處理 (Normalize → HVG → Scale → CellCycle) ####
 # -- 此處仍採 LogNormalize 與 VST，保持與前面 Merge Demo 一致。
+s.genes <- cc.genes$s.genes
+g2m.genes <- cc.genes$g2m.genes
+
 seurat_list <- lapply(
   X = seurat_list,
   FUN = function(x) {
