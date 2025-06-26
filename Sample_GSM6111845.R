@@ -72,6 +72,7 @@ seurat_GSM6111845 <- RunPCA(seurat_GSM6111845)  # 主成分分析
 # 4E. ElbowPlot : 視覺化變異解釋量，決定合理 PC 數
 # 觀察肘部圖，以挑選可解釋較多變異的 PC 數
 ElbowPlot(seurat_GSM6111845)  # 判斷主成分保留數量
+ElbowPlot(seurat_GSM6111845, ndims = 50)  # 判斷主成分保留數量
 
 # 4F. FindNeighbors / FindClusters : 建圖與社群偵測 (預設 Louvain)
 seurat_GSM6111845 <- FindNeighbors(seurat_GSM6111845, dims = 1:30)  # 建最近鄰圖 (KNN)
