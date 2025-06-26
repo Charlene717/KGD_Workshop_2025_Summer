@@ -36,7 +36,7 @@ seurat_GSM6111847 <- CreateSeuratObject(
   min.features = 200           # 單一細胞須表現 ≥200 個基因，濾除空液滴或低品質細胞。
 ) 
 
-saveRDS(seurat_GSM6111847, file = paste0(Name_ExportFolder, "/", Name_Export, "_GSM6111847_Ori.rds"))  # 單一 Seurat 物件；適合日後 readRDS() 載入
+# saveRDS(seurat_GSM6111847, file = paste0(Name_ExportFolder, "/", Name_Export, "_GSM6111847_Ori.rds"))  # 單一 Seurat 物件；適合日後 readRDS() 載入
 
 
 # --------------------------
