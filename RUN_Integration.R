@@ -91,69 +91,69 @@ if (Run_Demo_Merge) {
 ###############################################################################
 #### Data Integration ####
 
-## ── 3-0 拆回個別樣本 ─────────────────────────────────────────────────────────
-# SplitObject() 依 metadata$orig.ident 將合併物件切成 list；後續對每個子物件
-# 各自做 Normalize / HVG / Scale / Cell-cycle 打分，確保基線一致。
+#### 3-0 先依 orig.ident 拆回各自 Seurat 物件 ####
+# SplitObject() 只是「把大物件切片」，不會改變 data/matrix 內容。
 seurat_list <- SplitObject(
-  seurat_all_merge,          # ← 來源為「已合併、但尚未 batch-correct」的物件
-  split.by = "orig.ident"    # ← 預設就是 orig.ident；顯式寫出便於閱讀
+  seurat_all_merge,
+  split.by = "orig.ident"          # ← 依樣本來源欄位切分
 )
 
-## ── 3-1 子物件內部前處理 ─────────────────────────────────────────────────────
-# 參數說明：
-#   normalization.method = "LogNormalize"  → 10 k CPM + log1p（Seurat 預設）
-#   scale.factor = 10000                   → 與 downstream log-CPM 單位一致
-#   selection.method = "vst"               → Variance-Stabilizing Transformation
-#   nfeatures = 2000                       → 取前 2 000 個 HVG（Seurat 預設）
-#   features = rownames(x)                 → Scale 所有基因，而非只 HVG
-#   verbose = TRUE                         → 打印進度；若批量大可設 FALSE
+#### 3-1 每個樣本單獨前處理 (Normalize → HVG → Scale → CellCycle) ####
+# -- 此處仍採 LogNormalize 與 VST，保持與前面 Merge Demo 一致。
 seurat_list <- lapply(
-  X   = seurat_list,
+  X = seurat_list,
   FUN = function(x) {
-    x <- NormalizeData(x, normalization.method = "LogNormalize",
-                       scale.factor = 10000)
-    x <- FindVariableFeatures(x, selection.method = "vst",
-                              nfeatures = 2000)
-    x <- ScaleData(x, features = rownames(x), verbose = TRUE)
-    x <- CellCycleScoring(x, s.features   = s.genes,
-                          g2m.features = g2m.genes,
-                          set.ident    = FALSE)
-    return(x)
+    x <- NormalizeData(
+      x,
+      normalization.method = "LogNormalize",   # ← 同上一段
+      scale.factor         = 10000             # ← 每細胞歸一化目標總計數
+    )
+    x <- FindVariableFeatures(
+      x,
+      selection.method = "vst",                # ← 變異度穩定轉換法
+      nfeatures        = 2000                  # ← 固定 2,000 基因，不做修改
+    )
+    x <- ScaleData(
+      x,
+      features = rownames(x),                  # ← 全基因 Z-score
+      verbose  = TRUE
+    )
+    x <- CellCycleScoring(
+      x,
+      s.features   = s.genes,                  # ← 預載 S 期基因
+      g2m.features = g2m.genes,                # ← 預載 G2/M 期基因
+      set.ident    = FALSE                     # ← 不改 active.ident
+    )
+    return(x)                                  # ← 回傳處理完成的子物件
   }
 )
 
-## ── 3-2 選整合特徵 & 建錨點 ─────────────────────────────────────────────────
-# ① SelectIntegrationFeatures()
-#    - 預設 nfeatures = 2000 → 回傳跨樣本共有的前 2 000 HVG
-#    - 取值越高，批次校正效果通常更佳，但計算量與記憶體亦上升
+#### 3-2 選特徵 → 建錨點 ####
+# (1) SelectIntegrationFeatures()：跨樣本挑「共同且高變異」基因
 features <- SelectIntegrationFeatures(
-  object.list = seurat_list        # ← 必填；此處使用剛完成前處理的 list
-  # nfeatures  省略 → 採預設 2000
+  seurat_list                      # ← 傳入物件清單
+  # nfeatures 預設 2000 → 沒明示 = 使用預設值
 )
 
-# ② FindIntegrationAnchors()
-#    - anchor.features = features  → 明確指定上一步挑好的基因，確保重現性
-#    - dims = 1:30                → 與後續 IntegrateData / PCA 對齊
+# (2) FindIntegrationAnchors()：計算「錨點」，用作批次校正基礎
 anchors <- FindIntegrationAnchors(
-  object.list      = seurat_list,
-  anchor.features  = features,
-  dims             = 1:30
+  object.list     = seurat_list,   # ← 放入剛才處理好的列表
+  anchor.features = features,      # ← 用上一步篩出的特徵向量
+  dims            = 1:30           # ← 取 PCA 前 30 維作相似度空間
+  # reduction     = "cca"          # ← 預設 Canonical Correlation；v5 會自動選
+  # k.anchor      = 5             # ← 近鄰數；保留預設以維持原本設定
 )
 
-## ── 3-3 IntegrateData ───────────────────────────────────────────────────────
-#  - anchorset = anchors  → 使用剛計算出的 anchor 物件
-#  - dims      = 1:30     → 與錨點計算相同的 PCA 維度
-#  - 若想限制輸出基因，可用 features.to.integrate=*vector*；
-#    這裡留空表示保留所有在 anchors 中出現的基因（最常見做法）
+#### 3-3 整合 (IntegrateData) ####
+# 將所有子物件依 anchors 計算的轉換矩陣整合成「integrated」Assay
 seurat_all_integrated <- IntegrateData(
-  anchorset = anchors,
-  dims      = 1:30
+  anchorset = anchors,             # ← 必填；用剛產出的 Anchorset
+  dims      = 1:30                 # ← 與上一步保持一致
+  # features / features.to.integrate 省略 → 保留 anchors 內建資訊與預設行為
 )
 
-# ── 整合完成後會新增一個 "integrated" Assay ──
-#   • counts        → 原始計數（未校正）
-#   • data          → 批次校正後、log-scale 的表達矩陣
-#   • scale.data    → 若之後再執行 ScaleData() 會填入這裡
+# ★ 執行完畢後：Seurat 物件內會新增一個名為 "seurat_all_integrated" 的 Assay，
+#   其 counts/data/scale.data 均已做 batch-correction，可直接用於後續降維。
 ###############################################################################
 
 
