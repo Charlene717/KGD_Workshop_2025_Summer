@@ -116,6 +116,7 @@ seurat_list <- lapply(
 features <- SelectIntegrationFeatures(seurat_list)   # ← 預設 top 2k
 anchors  <- FindIntegrationAnchors(
   seurat_list,
+  anchor.features = features,
   dims = 1:30                                         # ← 與後續 IntegrateData 對齊
 )
 
