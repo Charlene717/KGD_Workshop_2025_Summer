@@ -36,10 +36,6 @@ source("Sample_GSM6111844.R")
 source("Sample_GSM6111845.R")
 source("Sample_GSM6111847.R")
 
-# 
-# source("Sample_2901.R")
-# source("Sample_3080.R")
-
 
 #### Merge multiple samples ####
 seurat_all <- merge(GSM6111844, y = list(GSM6111845,GSM6111847),
