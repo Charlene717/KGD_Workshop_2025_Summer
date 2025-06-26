@@ -32,16 +32,18 @@ if (!dir.exists(Name_ExportFolder)){dir.create(Name_ExportFolder)}
 
 
 #### Data Loading and Preprocessing ####
+source("Sample_GSM6111844.R")
 source("Sample_GSM6111845.R")
+source("Sample_GSM6111847.R")
 
-
-source("Sample_2901.R")
-source("Sample_3080.R")
+# 
+# source("Sample_2901.R")
+# source("Sample_3080.R")
 
 
 #### Merge multiple samples ####
-seurat_all <- merge(seurat_2901, y = list(seurat_3080),
-                    add.cell.ids = c("HC2901","HC3080"))
+seurat_all <- merge(GSM6111844, y = list(GSM6111845,GSM6111847),
+                    add.cell.ids = c("GSM6111844","GSM6111845","GSM6111847"))
 
 seurat_all <- JoinLayers(seurat_all)  # 🔥 在 merge 後統一執行 JoinLayers
 
