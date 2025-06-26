@@ -16,7 +16,7 @@ library(ggplot2)
 #### Set Parameter ####
 ## Set Export 
 # Generate unique export parameters
-Set_Project <- "Keloid"
+Set_Project <- "Demo"
 
 Name_time_wo_micro <- substr(gsub("[- :]", "", as.character(Sys.time())), 1, 10) # Generate a unique time-based ID
 Name_FileID <- paste0(Name_time_wo_micro, paste0(sample(LETTERS, 3), collapse = ""))
