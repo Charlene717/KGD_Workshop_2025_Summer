@@ -90,39 +90,72 @@ if (Run_Demo_Merge) {
 # 3. 樣本分割後再整合 (Integration) --------------------------------------------
 ###############################################################################
 #### Data Integration ####
-# SplitObject() 依 metadata$orig.ident 把合併後物件拆回多個子物件
-seurat_list <- SplitObject(seurat_all_merge, split.by = "orig.ident")
 
-# -------- 3-1 每個樣本各自 Normalize / VariableFeature / Scale / CellCycle --
-# 注意：此處「先 scale、後回歸」是可靠的做法；若資料量大可考慮只 scale HVGs。
+## ── 3-0 拆回個別樣本 ─────────────────────────────────────────────────────────
+# SplitObject() 依 metadata$orig.ident 將合併物件切成 list；後續對每個子物件
+# 各自做 Normalize / HVG / Scale / Cell-cycle 打分，確保基線一致。
+seurat_list <- SplitObject(
+  seurat_all_merge,          # ← 來源為「已合併、但尚未 batch-correct」的物件
+  split.by = "orig.ident"    # ← 預設就是 orig.ident；顯式寫出便於閱讀
+)
+
+## ── 3-1 子物件內部前處理 ─────────────────────────────────────────────────────
+# 參數說明：
+#   normalization.method = "LogNormalize"  → 10 k CPM + log1p（Seurat 預設）
+#   scale.factor = 10000                   → 與 downstream log-CPM 單位一致
+#   selection.method = "vst"               → Variance-Stabilizing Transformation
+#   nfeatures = 2000                       → 取前 2 000 個 HVG（Seurat 預設）
+#   features = rownames(x)                 → Scale 所有基因，而非只 HVG
+#   verbose = TRUE                         → 打印進度；若批量大可設 FALSE
 seurat_list <- lapply(
   X   = seurat_list,
   FUN = function(x) {
-    x <- NormalizeData(x,
-                       normalization.method = "LogNormalize",
-                       scale.factor         = 10000)
-    x <- FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000)
+    x <- NormalizeData(x, normalization.method = "LogNormalize",
+                       scale.factor = 10000)
+    x <- FindVariableFeatures(x, selection.method = "vst",
+                              nfeatures = 2000)
     x <- ScaleData(x, features = rownames(x), verbose = TRUE)
-    x <- CellCycleScoring(x,
-                          s.features   = s.genes,
+    x <- CellCycleScoring(x, s.features   = s.genes,
                           g2m.features = g2m.genes,
                           set.ident    = FALSE)
     return(x)
   }
 )
 
-# -------- 3-2 SelectIntegrationFeatures / FindIntegrationAnchors -------------
-# 挑選跨樣本的整合特徵 (HVG union) → 建立「錨點」。
-features <- SelectIntegrationFeatures(seurat_list)   # ← 預設 top 2k
-anchors  <- FindIntegrationAnchors(
-  seurat_list,
-  anchor.features = features,
-  dims = 1:30                                         # ← 與後續 IntegrateData 對齊
+## ── 3-2 選整合特徵 & 建錨點 ─────────────────────────────────────────────────
+# ① SelectIntegrationFeatures()
+#    - 預設 nfeatures = 2000 → 回傳跨樣本共有的前 2 000 HVG
+#    - 取值越高，批次校正效果通常更佳，但計算量與記憶體亦上升
+features <- SelectIntegrationFeatures(
+  object.list = seurat_list        # ← 必填；此處使用剛完成前處理的 list
+  # nfeatures  省略 → 採預設 2000
 )
 
-# -------- 3-3 IntegrateData ---------------------------------------------------
-# 基於 anchors 做 batch-correction，生成「integrated」Assay。
-seurat_all_integrated <- IntegrateData(anchors, dims = 1:30)
+# ② FindIntegrationAnchors()
+#    - anchor.features = features  → 明確指定上一步挑好的基因，確保重現性
+#    - dims = 1:30                → 與後續 IntegrateData / PCA 對齊
+anchors <- FindIntegrationAnchors(
+  object.list      = seurat_list,
+  anchor.features  = features,
+  dims             = 1:30
+)
+
+## ── 3-3 IntegrateData ───────────────────────────────────────────────────────
+#  - anchorset = anchors  → 使用剛計算出的 anchor 物件
+#  - dims      = 1:30     → 與錨點計算相同的 PCA 維度
+#  - 若想限制輸出基因，可用 features.to.integrate=*vector*；
+#    這裡留空表示保留所有在 anchors 中出現的基因（最常見做法）
+seurat_all_integrated <- IntegrateData(
+  anchorset = anchors,
+  dims      = 1:30
+)
+
+# ── 整合完成後會新增一個 "integrated" Assay ──
+#   • counts        → 原始計數（未校正）
+#   • data          → 批次校正後、log-scale 的表達矩陣
+#   • scale.data    → 若之後再執行 ScaleData() 會填入這裡
+###############################################################################
+
 
 ###############################################################################
 # 4. 降維、分群 (整合後) -------------------------------------------------------
