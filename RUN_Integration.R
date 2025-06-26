@@ -192,6 +192,17 @@ if (Run_Demo_Merge) {
   print(Plot)
 }
 
+
+# 合併層（僅限 Seurat ≥ 5）
+# 在 Seurat v5 之後，Read10X() 或其他輸入可能存成「多層 (Layer)」結構
+# （counts.X / data.X 等），JoinLayers() 會把同名層合併成單一矩陣。
+if (packageVersion("Seurat") >= "5.0.0") {
+  seurat_all_integrated <- JoinLayers(
+    seurat_all_integrated,
+    assay = "RNA"          # specify which assay to join
+  )
+}
+
 ###############################################################################
 # 5. 輸出整合後的 Seurat 物件 --------------------------------------------------
 ###############################################################################
