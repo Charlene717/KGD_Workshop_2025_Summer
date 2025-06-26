@@ -101,7 +101,7 @@ integrated <- FindNeighbors(integrated, dims = 1:30) %>% FindClusters(resolution
 library(SingleR); library(celldex); library(Seurat); library(ggplot2)
 
 hpca   <- HumanPrimaryCellAtlasData()                                 # reference dataset
-counts <- GetAssayData(seurat_all_integrated, assay = "RNA", slot = "data")
+counts <- GetAssayData(seurat_all_integrated, slot = "data")
 
 pred <- SingleR(test = counts, ref = hpca, labels = hpca$label.main)  # automatic annotation
 seurat_all_integrated$Label_SingleR_HPCA <- pred$pruned.labels        # add to metadata
