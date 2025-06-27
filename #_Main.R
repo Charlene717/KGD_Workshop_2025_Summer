@@ -53,6 +53,7 @@ source("RUN_CellType_Annotation_SingleR.R")
 DefaultAssay(seurat_all_integrated) <- "RNA"
 DotPlot(seurat_all_integrated, features = c("KRT14", "CD3D", "PECAM1")) + RotatedAxis()
 
+source("KGD_CTAnnot_MarkerList.R")
 
 #### Differential Expression Gene (DEG) Analysis ####
 
