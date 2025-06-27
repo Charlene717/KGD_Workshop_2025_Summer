@@ -55,8 +55,9 @@ DotPlot(seurat_all_integrated, features = c("KRT14", "CD3D", "PECAM1")) + Rotate
 
 source("KGD_CTAnnot_MarkerList.R")
 
-#### Differential Expression Gene (DEG) Analysis ####
 
+#### Differential Expression Gene (DEG) Analysis ####
+source("RUN_DEG.R")
 
 
 #### Enrichment Analysis ####
