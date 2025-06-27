@@ -18,6 +18,16 @@ source("Install_required_packages_KGD_Lab.R")
 ## 自動安裝最新版本套件
 source("Install_required_packages.R")
 
+
+## Speed up
+if(!require('future')) install.packages('future'); library(future)
+## https://github.com/immunogenomics/presto
+if(!require('presto')) devtools::install_github("immunogenomics/presto"); library(presto) # Speeds up FindAllMarkers
+plan(multicore, workers = 20)
+options(future.globals.maxSize = 2048*100 * 1024^2) # Set memory limit to ~204.8 GB
+
+
+
 #### Set Parameter ####
 ## Set Export 
 # Generate unique export parameters

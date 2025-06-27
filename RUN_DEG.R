@@ -2,6 +2,16 @@ library(Seurat)
 library(dplyr)
 
 
+## Speed up
+if(!require('future')) install.packages('future'); library(future)
+## https://github.com/immunogenomics/presto
+if(!require('presto')) devtools::install_github("immunogenomics/presto"); library(presto) # Speeds up FindAllMarkers
+plan(multicore, workers = 20)
+options(future.globals.maxSize = 2048*100 * 1024^2) # Set memory limit to ~204.8 GB
+################################################################################
+
+
+
 Idents(seurat_all_integrated) <- "seurat_clusters"
 
 # Idents(seurat_all_integrated) <- "celltype"
