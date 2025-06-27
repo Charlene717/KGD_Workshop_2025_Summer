@@ -11,7 +11,7 @@ options(future.globals.maxSize = 2048*100 * 1024^2) # Set memory limit to ~204.8
 ################################################################################
 
 
-
+# 設定群組標籤為 seurat_clusters
 Idents(seurat_all_integrated) <- "seurat_clusters"
 
 # Idents(seurat_all_integrated) <- "celltype"
@@ -42,19 +42,80 @@ DoHeatmap(seurat_all_integrated, features = top10_markers$gene) + NoLegend()
 #################################################################################
 
 
-# 設定群組標籤為 orig.ident
-Idents(seurat_all_integrated) <- "orig.ident"
+library(Seurat)
+library(ggplot2)
+library(dplyr)
+library(patchwork)
 
-# 僅挑出兩組樣本
-seurat_subset <- subset(seurat_all_integrated, idents = c("GSM6111844", "GSM6111847"))
+# 確保 cluster 編號存在
+Idents(seurat_all_integrated) <- "seurat_clusters"
+clusters <- levels(seurat_all_integrated)
 
-# DEG 分析：GSM6111844 vs GSM6111847
-deg_result <- FindMarkers(seurat_subset, 
-                          ident.1 = "GSM6111844", 
-                          ident.2 = "GSM6111847", 
-                          logfc.threshold = 0.25, 
-                          min.pct = 0.1)
+# 只保留 GSM6111844 和 GSM6111847
+seurat_filtered <- subset(seurat_all_integrated, subset = orig.ident %in% c("GSM6111844", "GSM6111847"))
 
-# 查看 top DEG
-head(deg_result[order(deg_result$p_val_adj), ])
+# 依 cluster 逐一做 DEG
+deg_list <- list()
+
+for (cl in clusters) {
+  message("Analyzing cluster ", cl)
+  
+  # 篩出該 cluster 中的細胞
+  cells_in_cluster <- WhichCells(seurat_filtered, idents = cl)
+  seurat_sub <- subset(seurat_filtered, cells = cells_in_cluster)
+  
+  # 設定為 GSM ID 作為比較群
+  Idents(seurat_sub) <- "orig.ident"
+  
+  # 做 DEG 分析
+  deg <- FindMarkers(seurat_sub,
+                     ident.1 = "GSM6111844",
+                     ident.2 = "GSM6111847",
+                     logfc.threshold = 0.25,
+                     min.pct = 0.1)
+  deg$gene <- rownames(deg)
+  deg$cluster <- cl
+  deg_list[[cl]] <- deg
+}
+
+
+
+
+library(ggrepel)
+library(pheatmap)
+
+for (cl in names(deg_list)) {
+  deg <- deg_list[[cl]]
+  
+  # --- 火山圖 ---
+  deg$significance <- "Not Sig"
+  deg$significance[deg$p_val_adj < 0.05 & deg$avg_log2FC > 0.25] <- "Up"
+  deg$significance[deg$p_val_adj < 0.05 & deg$avg_log2FC < -0.25] <- "Down"
+  
+  p <- ggplot(deg, aes(x = avg_log2FC, y = -log10(p_val_adj), color = significance)) +
+    geom_point(alpha = 0.6) +
+    scale_color_manual(values = c("blue", "gray", "red")) +
+    ggtitle(paste("Volcano Plot - Cluster", cl)) +
+    theme_minimal() +
+    geom_text_repel(data = head(deg[order(deg$p_val_adj), ], 10),
+                    aes(label = gene),
+                    size = 3, max.overlaps = 20)
+  
+  print(p)
+  
+  # --- Heatmap ---
+  top_genes <- deg %>% 
+    filter(p_val_adj < 0.05) %>% 
+    arrange(p_val_adj) %>% 
+    head(10) %>% 
+    pull(gene)
+  
+  if (length(top_genes) > 1) {
+    DoHeatmap(seurat_filtered,
+              features = top_genes,
+              cells = WhichCells(seurat_filtered, idents = cl),
+              group.by = "orig.ident") + 
+      ggtitle(paste("Heatmap - Cluster", cl))
+  }
+}
 
