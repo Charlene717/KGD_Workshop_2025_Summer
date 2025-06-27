@@ -20,6 +20,15 @@ cluster_markers_sig <- cluster_markers %>% filter(p_val_adj < 0.05)
 top10_markers <- cluster_markers_sig %>% group_by(cluster) %>% top_n(10, avg_log2FC)
 
 
+# cluster_markers_sig %>%
+#   group_by(cluster) %>%
+#   dplyr::filter(avg_log2FC > 1) %>%
+#   slice_head(n = 10) %>%
+#   ungroup() -> top10
+DoHeatmap(seurat_all_integrated, features = top10_markers$gene) + NoLegend()
+
+
+
 #################################################################################
 
 
