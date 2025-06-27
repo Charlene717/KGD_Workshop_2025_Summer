@@ -72,13 +72,8 @@ source("RUN_Trajectory_Analysis_Monocle2.R")
 
 
 #### Export ####
-# ※請先於腳本上方或執行前設定 Name_ExportFolder / Name_Export 變數※
-# Name_ExportFolder <- "C:/Charlene/Output"  # 匯出資料夾路徑
-# Name_Export       <- "GSM6111845_preprocessed"  # 檔名前綴
-
-
 # 匯出 Seurat 物件 (RDS) — 將物件儲存為 .rds 供後續流程載入
-saveRDS(seurat_GSM6111845, file = paste0(Name_ExportFolder, "/", Name_Export, ".rds"))  # 單一 Seurat 物件；適合日後 readRDS() 載入
+saveRDS(seurat_all_integrated, file = paste0(Name_ExportFolder, "/", Name_Export, ".rds"))  # 單一 Seurat 物件；適合日後 readRDS() 載入
 
 
 # 匯出完整 R 工作空間 (RData) — 若需重現所有物件、變數
