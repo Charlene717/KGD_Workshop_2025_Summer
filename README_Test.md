@@ -21,6 +21,8 @@
 | 22:25‑22:40 | 許念芸 Nien‑Yun Sharon Hsu | 蟹足腫跨物種整合實作經驗分享<br>Cross‑Species Integration in Keloid: Practical Implementation Experience |
 | 22:40‑23:00 | 張嘉容 Chia‑Jung Charlene Chang | 實驗室分析資源導覽與 AI 輔助生物資訊分析技巧<br>Overview of Dry‑Lab Resources & AI‑Assisted Bioinformatics Techniques |
 
+<img src="https://github.com/Charlene717/KGD_Workshop_2025_Summer/tree/main/www/2025-07-22_190901.png?raw=true?raw=true" alt="活動合影" width="1000"/>
+
 ---
 
 ## Workshop 2 — scRNA‑seq 分析的實際演示與工作流程講解  ·<br>Practical Demonstration and Workflow Explanation of scRNA‑seq Analysis<br>
@@ -45,6 +47,7 @@
 | 22:35‑22:50 | 結果評估與分析驗證方法<br>Evaluation & Validation of Analytical Results |
 | 22:50‑23:00 | 根據研究目標選擇與導入適切的分析工具<br>Selecting & Implementing Tools Based on Research Objectives |
 
+# 
 
 ## 實作事前準備 Pre‑Workshop Preparation
 
@@ -69,17 +72,13 @@
   Organization URL: <https://github.com/KGDLab>
 
 ---
-
 ## 實作作業說明 Practical Assignment Instructions
 [📑 **實作作業說明檔案 (Workshop_2025_Practical_Assignment_Instructions.pdf)**](./Agenda_and_Guidelines/Workshop_2025_Practical_Assignment_Instructions.pdf)
 
-
 ---
+## 實作流程簡介 Workshop Practical Workflow
+[📑 **實作流程簡介 (Workshop_Practical_Workflow.md)**](./Agenda_and_Guidelines/Workshop_Practical_Workflow.md)
 
-## 活動合影
-
-<img src="https://github.com/Charlene717/KGD_Workshop_2025_Summer/tree/main/www/2025-07-22_190901.png?raw=true?raw=true" alt="活動合影" width="1000"/>
- 
 ---
 ## 實驗室網站
 [KGD Lab](https://twkgd.wordpress.com/)
