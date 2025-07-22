@@ -1,161 +1,102 @@
+# 蟹足腫與皮膚遺傳團隊工作坊  
+# Workshop of Keloid and Genodermatosis Study  
 
-# 🧬 scRNA-seq Workshop Practical Workflow
+## 高通量定序分析技術實務應用：單細胞 RNA 定序與空間轉錄組  
+### Practical Applications of High‑Throughput Sequencing Technologies: Single‑Cell RNA Sequencing and Spatial Transcriptomics  
 
-This practical workflow demonstrates key steps in single-cell RNA sequencing (scRNA-seq) analysis, including data preprocessing, doublet removal, sample integration, cell annotation, cell-cell communication, and pseudotime analysis. The R code examples are simplified for hands-on training.
+- **時間 | Date:** 2025/7/18 (五) 21:00 – 23:00 | July 18 2025 (Fri) 21:00–23:00  
+- **地點 | Venue:** 線上會議 [Google Meet](https://meet.google.com/agz-dcee-kfa)
+
+| 時間 Time | 報告者 Presenter | 主題 Topic |
+|-----------|-----------------|-----------|
+| 21:00–21:20 | 黃道揚<br>Daw‑Yang Hwang | 單細胞定序與空間轉錄組平台介紹<br>**Introduction to Single‑Cell RNA Sequencing and Spatial Transcriptomics Platforms** |
+| 21:20–21:30 | 巫政霖<br>Cheng‑Lin Wu | 檢體處理流程簡介<br>**Overview of Sample Processing Workflow** |
+| 21:30–21:50 | 劉宗霖 Tsung‑Lin Liu<br>林鉎嵃 Sern‑Yan Lim | 單細胞 RNA 定序資料之生物資訊分析流程<br>**Bioinformatics Workflow for Single‑Cell RNA Sequencing** |
+| 21:50–22:10 | 蘇柏嵐<br>Po‑Lan Su | 空間轉錄組學：實驗技術操作與資料分析概念<br>**Spatial Transcriptomics: Wet‑Lab Procedures and Analytical Concepts** |
+| 22:10–22:25 | Joanne Jerenice J. Añonuevo | 蟹足腫案例實作經驗分享<br>**Keloid Case Study: Practical Implementation Experience** |
+| 22:25–22:40 | 許念芸<br>Nien‑Yun Sharon Hsu | 蟹足腫跨物種整合實作經驗分享<br>**Cross‑Species Integration in Keloid: Practical Implementation Experience** |
+| 22:40–23:00 | 張嘉容<br>Chia‑Jung Charlene Chang | 實驗室分析資源導覽與 AI 輔助生物資訊分析技巧<br>**Overview of Dry‑Lab Resources and AI‑Assisted Bioinformatics Techniques** |
+
+
 
 ---
 
-## 📦 1. Data Loading and Preprocessing (Seurat)
+# scRNA‑seq 分析的實際演示和工作流程講解  
+# Practical Demonstration & Workflow Explanation of scRNA‑seq Analysis  
 
-```r
-library(Seurat)
-library(dplyr)
-library(ggplot2)
+- **時間 | Date:** 2025/8/1 (五) 21:00 – 23:00 | Aug 1 2025 (Fri) 21:00–23:00  
+- **地點 | Venue:** 線上會議 [Google Meet](https://meet.google.com/fre-vxzi-bae)  
+- **講者 | Speakers:** 蘇柏嵐 Po‑Lan Su、張嘉容 Chia‑Jung Chang (Charlene)
 
-# Read data and create Seurat object
-data_2901 <- Read10X("2901/")
-seurat_2901 <- CreateSeuratObject(counts = data_2901, min.cells = 3, min.features = 200)
+| 時間 Time | 主題 Topic |
+|-----------|-----------|
+| 21:00–21:10 | 單細胞分析流程總覽及核心概念導讀<br>**Overview of scRNA‑seq Workflow with Key Concepts** |
+| 21:10–21:15 | scRNA‑seq 資料下載與預處理策略<br>**Strategies for Downloading & Pre‑processing scRNA‑seq Data** |
+| 21:15–21:30 | R 語言基礎導論<br>**Foundations of R Programming** |
+| 21:30–21:45 | 品質控制方法、前處理與跨樣本資料整合<br>**Quality Control, Pre‑processing & Cross‑Sample Integration** |
+| 21:45–22:00 | 細胞類型註解與分群<br>**Cell‑Type Annotation & Clustering** |
+| 22:00–22:15 | 差異基因表現與功能富集分析<br>**Differential Gene Expression & Functional Enrichment** |
+| 22:15–22:25 | 細胞間通訊分析<br>**Cell‑Cell Communication Analysis** |
+| 22:25–22:35 | 細胞軌跡與擬時序分析方法<br>**Trajectory Inference & Pseudotime Analysis** |
+| 22:35–22:50 | 結果評估與分析驗證方法<br>**Evaluation of Analytical Results & Validation Techniques** |
+| 22:50–23:00 | 如何依研究目標選擇並導入合適的分析工具與方法<br>**Choosing & Implementing Tools Based on Research Objectives** |
 
-# Calculate mitochondrial gene percentage and perform quality control
-seurat_2901[["percent.mt"]] <- PercentageFeatureSet(seurat_2901, pattern = "^MT-")
-seurat_2901 <- subset(seurat_2901, subset = nFeature_RNA > 200 & nFeature_RNA < 5000 & percent.mt < 30)
-```
+
 
 ---
 
-## ❌ 2. Doublet Removal (DoubletFinder)
+## 實作事前準備 | Pre‑Workshop Preparation  
 
-```r
-library(DoubletFinder)
+1. **電腦與軟體 | Computer & Software**  
+   - 安裝 **R ≥ 4.1.3**（建議 4.1.3）與 **RStudio**  
+   - 下載網址: <https://posit.co/download/rstudio-desktop/>
 
-# Standard Seurat preprocessing steps
-seurat_2901 <- NormalizeData(seurat_2901, normalization.method = "LogNormalize", scale.factor = 10000)
-seurat_2901 <- FindVariableFeatures(seurat_2901, selection.method = "vst", nfeatures = 2000)
-seurat_2901 <- ScaleData(seurat_2901, features = rownames(seurat_2901), verbose = TRUE)
-seurat_2901 <- RunPCA(seurat_2901)
-ElbowPlot(seurat_2901)
-seurat_2901 <- FindNeighbors(seurat_2901, dims = 1:30)
-seurat_2901 <- FindClusters(seurat_2901)
-seurat_2901 <- RunUMAP(seurat_2901, dims = 1:30)
-DimPlot(seurat_2901, reduction = "umap", label = T)
+2. **範例資料與程式碼 | Example Data & Scripts**  
+   - 範例資料: <https://reurl.cc/NYzGM9>  
+   - GitHub 倉庫: <https://github.com/KGDLab/KGD_Workshop_2025_Summer>  
+   - **套件安裝 (choose one):**  
+     - 最新版本：`source("Install_required_packages.R")`  
+     - 指定版本：`source("Install_required_packages_KGD_Lab.R")`  
+   - 安裝/技術問題請聯絡 Charlene：<mailto:p88071020@gs.ncku.edu.tw>
 
-# Determine optimal pK
-sweep_res <- paramSweep(seurat_2901, PCs = 1:30)
-sweep_stats <- summarizeSweep(sweep_res)
-best_pk <- find.pK(sweep_stats)
-pK <- as.numeric(as.character(best_pk[which.max(best_pk$BCmetric), "pK"]))
+3. **GitHub**  
+   - 建立個人帳號並提供使用者名稱以加入 KGD_Lab  
+   - 組織連結: <https://github.com/KGDLab>
 
-# Estimate expected doublet count
-annotations <- seurat_2901$seurat_clusters
-homotypic.prop <- modelHomotypic(annotations)
-nExp <- round(0.08 * nrow(seurat_2901@meta.data) * (1 - homotypic.prop))
 
-# Predict and remove doublets
-seurat_2901 <- doubletFinder(seurat_2901, PCs = 1:30, pN = 0.25, pK = pK, nExp = nExp) # Run DoubletFinder with specified parameters
-df_col <- grep("^DF\\.classifications", colnames(seurat_2901@meta.data), value = TRUE)[1] # Identify the metadata column that starts with "DF.classifications"
-DimPlot(seurat_2901, reduction = 'umap', group.by = df_col) # Visualize UMAP colored by doublet classification
-table(seurat_2901@meta.data[[df_col]]) # Display count of Singlet vs Doublet classifications
-seurat_2901 <- seurat_2901[, seurat_2901@meta.data[[df_col]] == "Singlet"] # Subset the object to retain only singlet cells
-DimPlot(seurat_2901, reduction = "umap", group.by = df_col) # Re-visualize UMAP after singlet filtering
-seurat_2901 # View the resulting Seurat object
-```
 
 ---
 
-## 🔗 3. Integration of Multiple Samples
+# 實作作業說明 | Practical Assignment Instructions  
 
-```r
-# Merge multiple samples
-seurat_all <- merge(seurat_2901, y = list(seurat_3080, seurat_3116, seurat_3138),
-                    add.cell.ids = c("HC2901","HC3080","DSAP3116","DSAP3138"))
+### 重要時程  
+- **書面報告繳交期限:** 工作坊結束後 **1 個月內**  
+- **口頭報告:** 2025/8/30 (六) 10:00–16:00 (TBD)  
+  - **地點:** 成大醫學院 6F 82‑0624  
 
-seurat_list <- SplitObject(seurat_all, split.by = "orig.ident")
+### 作業內容  
+下載「**線上公開的皮膚相關 scRNA‑seq 資料**」並完成完整分析。  
+共 **9 + 1** 項檢核 (Checkpoints) — **#0 與 #5–8 為必答**，其餘可視分析需求選答。  
+請依序回答下列問題並附上 **圖表、統計量或文獻** 作為佐證。  
 
-# Normalize and score cell cycle for each sample
-seurat_list <- lapply(X = seurat_list, FUN = function(x) {
-  x <- NormalizeData(x,normalization.method = "LogNormalize", scale.factor = 10000)
-  x <- FindVariableFeatures(x, selection.method = "vst", nfeatures = 2000)
-  x <- ScaleData(x, features = rownames(x), verbose = TRUE)
-  x <- CellCycleScoring(x, s.features = cc.genes$s.genes, g2m.features = cc.genes$g2m.genes, set.ident = FALSE)
-})
+| # | 檢核主題 Topic | 檢查點與關鍵問題 Checkpoints & Key Questions |
+|---|---------------|---------------------------------------------|
+| 0 | **資料來源與預處理記錄**<br>Data Source & Pre‑processing | • 詳細紀錄資料來源、樣本說明、分析流程、R/套件版本、參數設定 |
+| 1 | **品質控制 (QC) 設定**<br>Quality Control | • 閾值與過濾策略是否合理？<br>• 是否過度過濾而排除關鍵細胞？ |
+| 2 | **主成分數量 (PCs) 選擇**<br>Principal Components | • 依據哪些指標/概念決定 PC 數？ |
+| 3 | **批次效應校正**<br>Batch‑Effect Correction | • 整合後是否改善 batch effect 並保留生物訊號？<br>• 跨平台/實驗室/物種整合須注意何事？ |
+| 4 | **群集解析度調整**<br>Clustering Resolution | • 解析度是否合理？判斷過高/過低的依據？<br>• 是否使用量化指標優化解析度？ |
+| 5 | **細胞類型標註** *(必答／Required)* | • 標註是否符合已知生物學？<br>• 是否出現族群變化或新穎細胞？ |
+| 6 | **差異基因表現 (DEG)** *(必答／Required)* | • 篩選門檻與統計方法是否恰當？為什麼？<br>• DEG 與疾病機轉/治療靶點/細胞功能之關聯？ |
+| 7 | **功能富集 & 細胞通訊** *(必答／Required)* | • 富集/通訊分析提出哪些機制假說？<br>• 與臨床或病理的聯繫為何？ |
+| 8 | **結果整合** *(必答／Required)* | • 各分析結果是否一致？<br>• 是否能整合為一個生物機制模型？ |
+| 9 | **軌跡分析** *(若適用／Optional)* | • 如何界定起點 (root)？<br>• 起點選擇對結果有何影響？ |
 
+### 提交格式 | Submission Format  
 
+| 類型 | 要求 |
+|------|------|
+| **書面報告** | Word 或 PDF 檔，內含**完整程式碼**、**主要圖表**與**結果說明** |
+| **口頭報告** | 10‑分鐘簡報 + 5‑分鐘 Q&A |
 
-# Data integration
-features <- SelectIntegrationFeatures(seurat_list)
-anchors <- FindIntegrationAnchors(seurat_list, dims = 1:30)
-integrated <- IntegrateData(anchors, dims = 1:30)
-
-# Dimensionality reduction and clustering
-DefaultAssay(integrated) <- "integrated"
-integrated <- ScaleData(integrated, vars.to.regress = c("S.Score", "G2M.Score", "percent.mt"))
-integrated <- RunPCA(integrated, npcs = 50) %>% RunUMAP(dims = 1:30)
-integrated <- FindNeighbors(integrated, dims = 1:30) %>% FindClusters(resolution = 0.3)
-```
-
----
-
-## 🧾 4. Cell Type Annotation (SingleR + Marker Genes)
-
-```r
-library(SingleR); library(celldex); library(Seurat); library(ggplot2)
-
-hpca   <- HumanPrimaryCellAtlasData()                                 # reference dataset
-counts <- GetAssayData(seurat_all_integrated, slot = "data")
-
-pred <- SingleR(test = counts, ref = hpca, labels = hpca$label.main)  # automatic annotation
-seurat_all_integrated$Label_SingleR_HPCA <- pred$pruned.labels        # add to metadata
-
-print(table(pred$pruned.labels))                                      # cell counts per label
-print(table(pred$pruned.labels, seurat_all_integrated@active.ident))  # label × cluster
-
-DimPlot(seurat_all_integrated, reduction = "umap",
-        group.by = "Label_SingleR_HPCA", label = TRUE, repel = TRUE) +
-  ggtitle("UMAP: SingleR (HPCA)")                                      # visualise on UMAP
-
-DefaultAssay(seurat_all_integrated) <- "RNA"
-DotPlot(seurat_all_integrated, features = c("KRT14", "CD3D", "PECAM1")) +
-  RotatedAxis()                                                       # marker overview
-
-```
-
----
-
-## 🔁 5. Cell-Cell Communication Analysis (CellChat)
-
-```r
-library(CellChat)
-
-data.input <- GetAssayData(integrated, assay = "RNA", slot = "data")
-meta <- data.frame(group = Idents(integrated), row.names = colnames(integrated))
-cellchat <- createCellChat(data.input, meta = meta, group.by = "group")
-cellchat@DB <- CellChatDB.human
-
-# Analysis workflow
-cellchat <- subsetData(cellchat)
-cellchat <- identifyOverExpressedGenes(cellchat)
-cellchat <- computeCommunProb(cellchat)
-cellchat <- computeCommunProbPathway(cellchat)
-cellchat <- aggregateNet(cellchat)
-
-# Visualize communication circle plot
-netVisual_circle(cellchat@net$count)
-```
-
----
-
-## ⏳ 6. Pseudotime Analysis (Monocle2)
-
-```r
-library(monocle)
-
-# Convert Seurat object to Monocle format
-data <- as(as.matrix(integrated@assays$RNA@data), 'sparseMatrix')
-pd <- new("AnnotatedDataFrame", data = integrated@meta.data)
-fd <- new("AnnotatedDataFrame", data = data.frame(gene_short_name = rownames(data)))
-cds <- newCellDataSet(data, phenoData = pd, featureData = fd, expressionFamily = negbinomial.size())
-
-cds <- estimateSizeFactors(cds) %>% estimateDispersions()
-cds <- reduceDimension(cds, method = "DDRTree") %>% orderCells()
-plot_cell_trajectory(cds, color_by = "seurat_clusters")
-```
+> 若對作業有任何疑問，請隨時聯絡講者或助教團隊。  
