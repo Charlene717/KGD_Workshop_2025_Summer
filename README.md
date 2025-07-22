@@ -1,12 +1,8 @@
 <div align="center">
+# 蟹足腫與皮膚遺傳團隊工作坊  <br>Workshop of Keloid and Genodermatosis Study<br>
 
-# 蟹足腫與皮膚遺傳團隊工作坊  
-Workshop of Keloid and Genodermatosis Study  
-
-## 工作坊 1 — 高通量定序分析技術實務應用：單細胞 RNA 定序與空間轉錄組  
-Workshop 1 — Practical Applications of High‑Throughput Sequencing Technologies: Single‑Cell RNA Sequencing & Spatial Transcriptomics  
-
-
+## 工作坊 1 — 高通量定序分析技術實務應用：單細胞 RNA 定序與空間轉錄組  <br>Workshop 1 —Practical Applications of High‑Throughput Sequencing Technologies: Single‑Cell RNA Sequencing & Spatial Transcriptomics<br>
+</div>
 
 - **時間 Date:** 2025 / 07 / 18 (五 Friday) 21:00 – 23:00  
 - **地點 Venue:** 線上會議 Online Meeting <待加入影片撥放清單>
@@ -25,11 +21,11 @@ Workshop 1 — Practical Applications of High‑Throughput Sequencing Technolog
 | 22:40‑23:00 | 張嘉容 Chia‑Jung Charlene Chang | 實驗室分析資源導覽與 AI 輔助生物資訊分析技巧<br>Overview of Dry‑Lab Resources & AI‑Assisted Bioinformatics Techniques |
 
 <img src="https://github.com/Charlene717/KGD_Workshop_2025_Summer/tree/main/www/2025-07-22_190901.png?raw=true?raw=true" alt="活動合影" width="1000"/>
-</div>
 
 ---
 <div align="center">
 ## 工作坊 2 — scRNA‑seq 分析的實際演示與工作流程講解  ·<br>Workshop 2 —Practical Demonstration and Workflow Explanation of scRNA‑seq Analysis<br>
+</div>
 
 - **時間 Date:** 2025 / 08 / 01 (五 Friday) 21:00 – 23:00  
 - **地點 Venue:** Online Meeting <待加入影片撥放清單>  
@@ -38,6 +34,7 @@ Workshop 1 — Practical Applications of High‑Throughput Sequencing Technolog
 ### 📅 議程 Agenda
 [📑 **議程表下載 (Workshop_2025_0801_Agenda.pdf)**](./Agenda_and_Guidelines/Workshop_2025_0801_Agenda.pdf)
 
+<div align="center">
 | 時間 Time | 主題 Topic |
 |-----------|-----------|
 | 21:00‑21:10 | 單細胞分析流程總覽及核心概念導讀<br>Overview of scRNA‑seq Workflow with Key Concepts |
