@@ -77,7 +77,8 @@
 - Create a personal GitHub account and share your **username** to join **KGD_Lab**.  
   Organization URL: <https://github.com/KGDLab>
   
-<!-- spacer -->
+---
+
 
 <hr/>
 ## 🛠️ 實作流程導覽 Workshop Practical Workflow
@@ -85,7 +86,7 @@
 
 *本文件逐步示範 scRNA‑seq 分析流程，包含教學腳本與程式碼。*  
 *This document walks through the scRNA‑seq analysis workflow with step‑by‑step scripts and code.*
-<!-- spacer -->
+---
 
 <hr/>
 ## 📑 實作作業指引 Practical Assignment Guidelines
@@ -93,7 +94,7 @@
 
 *本文件詳述作業目的、繳交格式、9 + 1 項 Checkpoints 及評分標準。*  
 *This document outlines the assignment objectives, submission format, 9 + 1 checkpoints, and grading criteria.*
-<!-- spacer -->
+---
 
 <hr/>
 ## 實驗室網站
