@@ -8,8 +8,7 @@
 - **時間 / Date:** 2025 / 07 / 18 (Friday) 21:00 – 23:00  
 - **地點 / Venue:** Online Meeting <待加入影片撥放清單>
 
-### Program Schedule
-## 📅 議程一覽
+### 📅 議程<br>Agenda
 [📑 **議程表下載 (Workshop_2025_0718_Agenda.pdf)**](./Agenda_and_Guidelines/Workshop_2025_0718_Agenda.pdf)
 
 | 時間 Time | 報告者 Presenter | 主題 Topic |
