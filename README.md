@@ -37,6 +37,8 @@
 ### 📅 議程 Agenda
 [📑 **議程表下載 (Workshop_2025_0801_Agenda.pdf)**](./Agenda_and_Guidelines/Workshop_2025_0801_Agenda.pdf)
 
+<div align="center">
+
 | 時間 Time | 主題 Topic |
 |-----------|-----------|
 | 21:00‑21:10 | 單細胞分析流程總覽及核心概念導讀<br>Overview of scRNA‑seq Workflow with Key Concepts |
@@ -50,7 +52,8 @@
 | 22:35‑22:50 | 結果評估與分析驗證方法<br>Evaluation & Validation of Analytical Results |
 | 22:50‑23:00 | 根據研究目標選擇與導入適切的分析工具<br>Selecting & Implementing Tools Based on Research Objectives |
 
-# 
+</div>
+<br>
 
 ## 實作事前準備 Pre‑Workshop Preparation
 
