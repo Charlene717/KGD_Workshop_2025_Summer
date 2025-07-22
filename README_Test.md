@@ -5,10 +5,10 @@
 
 ## Workshop 1 — 高通量定序分析技術實務應用：單細胞 RNA 定序與空間轉錄組  <br>Practical Applications of High‑Throughput Sequencing Technologies: Single‑Cell RNA Sequencing & Spatial Transcriptomics<br>
 
-- **時間 / Date:** 2025 / 07 / 18 (Friday) 21:00 – 23:00  
-- **地點 / Venue:** Online Meeting <待加入影片撥放清單>
+- **時間 Date:** 2025 / 07 / 18 (五 Friday) 21:00 – 23:00  
+- **地點 Venue:** 線上會議 Online Meeting <待加入影片撥放清單>
 
-### 📅 議程<br>Agenda
+### 📅 議程 Agenda
 [📑 **議程表下載 (Workshop_2025_0718_Agenda.pdf)**](./Agenda_and_Guidelines/Workshop_2025_0718_Agenda.pdf)
 
 | 時間 Time | 報告者 Presenter | 主題 Topic |
@@ -25,11 +25,12 @@
 
 ## Workshop 2 — scRNA‑seq 分析的實際演示與工作流程講解  ·<br>Practical Demonstration and Workflow Explanation of scRNA‑seq Analysis<br>
 
-- **時間 / Date:** 2025 / 08 / 01 (Friday) 21:00 – 23:00  
-- **地點 / Venue:** Online Meeting <https://meet.google.com/fre-vxzi-bae>  
-- **講者 / Speakers:** 蘇柏嵐 Po‑Lan Su · 張嘉容 Chia‑Jung Chang (Charlene)
+- **時間 Date:** 2025 / 08 / 01 (五 Friday) 21:00 – 23:00  
+- **地點 Venue:** Online Meeting <待加入影片撥放清單>  
+- **講者 Speakers:** 蘇柏嵐 Po‑Lan Su · 張嘉容 Chia‑Jung Chang (Charlene)
 
-### Program Schedule
+### 📅 議程 Agenda
+[📑 **議程表下載 (Workshop_2025_0801_Agenda.pdf)**](./Agenda_and_Guidelines/Workshop_2025_0801_Agenda.pdf)
 
 | 時間 Time | 主題 Topic |
 |-----------|-----------|
