@@ -45,15 +45,14 @@
 | 22:35‑22:50 | 結果評估與分析驗證方法<br>Evaluation & Validation of Analytical Results |
 | 22:50‑23:00 | 根據研究目標選擇與導入適切的分析工具<br>Selecting & Implementing Tools Based on Research Objectives |
 
----
 
-## 實作事前準備 / Pre‑Workshop Preparation
+## 實作事前準備 Pre‑Workshop Preparation
 
-### 1. 電腦與軟體 / Computer & Software
+### 1. 電腦與軟體 Computer & Software
 - 安裝 **R ≥ 4.1.3**（實驗室慣用版本 4.1.3）與 **RStudio**。  
   Download: <https://posit.co/download/rstudio-desktop/>
 
-### 2. 範例資料與程式碼 / Example Data & Scripts
+### 2. 範例資料與程式碼 Example Data & Scripts
 - Example data: <https://reurl.cc/NYzGM9>  
 - GitHub repository (scripts & installers): <https://github.com/KGDLab/KGD_Workshop_2025_Summer>
   ```r
@@ -71,31 +70,16 @@
 
 ---
 
-## 實作作業說明 / Practical Assignment Instructions
+## 實作作業說明 Practical Assignment Instructions
+[📑 **實作作業說明檔案 (Workshop_2025_Practical_Assignment_Instructions.pdf)**](./Agenda_and_Guidelines/Workshop_2025_Practical_Assignment_Instructions.pdf)
 
-- **Written report deadline:** within **1 month** after workshop  
-- **Oral presentation:** 2025 / 08 / 30 (Saturday) 10:00 – 16:00 (TBD)  
-  - Venue: College of Medicine, NCKU — Room 82‑0624
 
-### Assignment Overview
-Participants must download a *public skin‑related scRNA‑seq dataset* and perform a **complete analysis** following the checkpoints below.
+---
 
-### 9 + 1 Checkpoints
-Checkpoints 0 & 5 – 8 are **mandatory**; others are optional.
+## 活動合影
 
-| # | 檢核主題 Topic | 檢查點與關鍵問題 Checkpoints & Key Questions |
-|---|---------------|---------------------------------------------|
-| 0 | 資料來源與預處理記錄<br>Data Source & Pre‑processing | • 詳細紀錄 dataset、samples、workflow、R & package versions、parameters |
-| 1 | 品質管制（QC）設定<br>Quality Control | • 閾值與過濾策略是否合理？<br>• 是否過度過濾排除關鍵細胞？ |
-| 2 | 主成分數量（PCs）選擇<br>PC Selection | • 依據哪些指標／概念決定 PC 數？ |
-| 3 | 批次效應校正<br>Batch Correction | • 是否減少 batch effect 並保留生物訊號？<br>• 跨平台／物種整合需注意何事？ |
-| 4 | 群集解析度調整<br>Clustering Resolution | • 解析度是否合宜？如何判斷過高／過低？<br>• 是否使用量化指標優化？ |
-| 5 | **細胞類型標註 (必答)**<br>Cell‑Type Annotation **(Required)** | • 標註是否符合已知生物學？<br>• 有無新穎或顯著變動的細胞族群？ |
-| 6 | **差異基因表現 (DEG) (必答)**<br>Differential Expression **(Required)** | • 篩選門檻與統計方法是否恰當？為何？<br>• 這些 DEG 與疾病、靶點、功能的關聯？ |
-| 7 | **功能富集 & 細胞通訊 (必答)**<br>Enrichment & Cell‑Cell Communication **(Required)** | • 機制假說為何？<br>• 與臨床／病理如何連結？ |
-| 8 | **結果整合 (必答)**<br>Integration of Results **(Required)** | • 各分析結果是否一致？<br>• 能否整合成生物機制模型？ |
-| 9 | 軌跡分析（若適用）<br>Trajectory (Optional) | • 如何界定 root？<br>• 起點選擇對結果有何影響？ |
-
-### Submission Format
-- **Written report:** Word or PDF — include full code, key plots, explanations  
-- **Oral presentation:** *10 min* talk + *5 min* Q&A
+<img src="https://github.com/Charlene717/KGD_Workshop_2025_Summer/tree/main/www/2025-07-22_190901.png?raw=true?raw=true" alt="活動合影" width="1000"/>
+ 
+---
+## 實驗室網站
+[KGD Lab](https://twkgd.wordpress.com/)
