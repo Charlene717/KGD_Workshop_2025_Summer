@@ -20,6 +20,7 @@
 | 21:20‑21:30 | 巫政霖 Cheng‑Lin Wu | 檢體處理流程簡介<br>Overview of Sample Processing Workflow |
 | 21:30‑21:50 | 劉宗霖 Tsung‑Lin Liu<br>林鉎嵃 Sern‑Yan Lim | 單細胞 RNA 定序資料之生物資訊分析流程<br>Bioinformatics Workflow for Single‑Cell RNA Sequencing |
 | 21:50‑22:10 | 蘇柏嵐 Po‑Lan Su | 空間轉錄組學：實驗技術操作與資料分析概念<br>Spatial Transcriptomics: Wet‑Lab Procedures & Analytical Concepts |
+| 22:10‑22:25 | Joanne Jerenice J. Añonuevo | 蟹足腫案例實作經驗分享<br>Keloid Case Study: Practical Implementation Experience |
 | 22:25‑22:40 | 許念芸 Nien‑Yun Sharon Hsu | 蟹足腫跨物種整合實作經驗分享<br>Cross‑Species Integration in Keloid: Practical Implementation Experience |
 | 22:40‑23:00 | 張嘉容 Chia‑Jung Charlene Chang | 實驗室分析資源導覽與 AI 輔助生物資訊分析技巧<br>Overview of Dry‑Lab Resources & AI‑Assisted Bioinformatics Techniques |
 
@@ -56,9 +57,31 @@
 
 ## 實作事前準備 Pre‑Workshop Preparation
 
-### 1. 電腦與軟體 Computer & Software
-- 安裝 **R ≥ 4.1.3**（實驗室慣用版本 4.1.3）與 **RStudio**。  
-  Download: <https://posit.co/download/rstudio-desktop/>
+### 1. 電腦與軟體 Computer & Software  
+> **說明 Note:** 單細胞 RNA-seq 及後續整合／軌跡分析會大量佔用記憶體；若資料規模 > 100k cells，請優先考慮使用 64 GB RAM 以上或雲端／HPC。
+
+| 規格項目 Spec | **最低配備 Minimum** | **建議配備 Recommended** |
+|---------------|---------------------|--------------------------|
+| 作業系統 OS | Windows 10 (64-bit) / macOS 12 / Ubuntu 20.04 | Windows 11 (64-bit) / macOS 14 / Ubuntu 22.04 |
+| 處理器 CPU | 6 cores (Intel / AMD / Apple Silicon) | 8 – 12 cores，多執行緒 / 高時脈 |
+| 記憶體 RAM | 16 GB | 32 GB （大量樣本建議 64 GB +） |
+| 儲存空間 Disk | SSD，≥ 50 GB free | NVMe SSD，≥ 200 GB free |
+| GPU (可選 Optional) | — | CUDA-capable / Apple M-series；加速可視化與深度學習 |
+| 網路 Internet | 穩定連線 ≥ 10 Mbps | ≥ 30 Mbps 以便快速下載資料與套件 |
+| 額外選項 Extras | — | Docker / Singularity 與 HPC/Cloud 帳號，用於重現及大型計算 |
+
+**English Summary**
+
+- **Minimum:** 6-core CPU, 16 GB RAM, SSD ≥ 50 GB.  
+- **Recommended:** 8–12-core CPU, 32 GB RAM (64 GB + for big datasets), NVMe SSD ≥ 200 GB, optional CUDA/Metal-capable GPU for visualization & ML.  
+- A stable ≥ 30 Mbps network and access to Docker/Singularity or HPC/Cloud resources are strongly encouraged for large-scale analyses.
+
+---
+
+安裝 **R ≥ 4.1.3**（實驗室慣用版本 4.1.3）與 **RStudio**  
+Install **R ≥ 4.1.3** (lab’s preferred 4.1.3) and **RStudio**  
+<https://posit.co/download/rstudio-desktop/>
+
 
 ### 2. 範例資料與程式碼 Example Data & Scripts
 - Example data: <https://reurl.cc/NYzGM9>  
