@@ -12,7 +12,7 @@
 - **地點 Venue:** 線上會議 Online Meeting <待加入影片撥放清單>
 
 ### 📅 議程 Agenda
-[📑 **議程表下載 (Workshop_2025_0718_Agenda.pdf)**](./Agenda_and_Guidelines/Workshop_2025_0718_Agenda.pdf)
+[📑 **議程表下載 (Workshop_2025_Summer_Part1_0718_Agenda.pdf)**](./Agenda_and_Guidelines/Workshop_2025_Summer_Part1_0718_Agenda.pdf)
 
 | 時間 Time | 報告者 Presenter | 主題 Topic | 影片                                                                   |
 |-----------|-----------------|------------|------------|
@@ -31,7 +31,7 @@
 ## 工作坊 2 — scRNA‑seq 分析的實際演示與工作流程講解  ·<br>Workshop 2 —Practical Demonstration and Workflow Explanation of scRNA‑seq Analysis<br>
 
 - **時間 Date:** 2025 / 08 / 01 (五 Friday) 21:00 – 23:00  
-- **地點 Venue:** Online Meeting <待加入影片撥放清單>  
+- **地點 Venue:** 線上會議 Online Meeting <待加入影片撥放清單>  
 - **講者 Speakers:** 蘇柏嵐 Po‑Lan Su · 張嘉容 Chia‑Jung Chang (Charlene)
 
 ### 📅 議程 Agenda
