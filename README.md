@@ -58,18 +58,18 @@
 ## 實作事前準備 Pre‑Workshop Preparation
 
 ### 1. 電腦與軟體 Computer & Software  
-> **說明 Note:** 單細胞 RNA‑seq 及後續整合／軌跡分析會大量佔用記憶體；若資料規模 > 100 k cells，請優先考慮使用 64 GB RAM 以上或雲端／HPC。<br>
+> **說明 Note:** 單細胞 RNA‑seq 及後續整合／軌跡分析會大量佔用記憶體；若資料規模 > 100 k cells，請優先考慮使用 64 GB RAM 以上或雲端／HPC。  
 > **Note:** Single‑cell RNA‑seq, downstream integration, and trajectory analyses are memory‑intensive. For datasets larger than 100 k cells, consider machines with ≥ 64 GB RAM or use cloud/HPC resources.
 
 | 規格項目 Spec | **最低配備 Minimum** | **建議配備 Recommended** |
 |--------------|----------------------|--------------------------|
-| 作業系統 OS | Windows 10 (64‑bit) / macOS 12 / Ubuntu 20.04<br>Windows 10 (64‑位元) / macOS 12 / Ubuntu 20.04 | Windows 11 (64‑bit) / macOS 14 / Ubuntu 22.04<br>Windows 11 (64‑位元) / macOS 14 / Ubuntu 22.04 |
-| 處理器 CPU | 6 cores (Intel / AMD / Apple Silicon)<br>6 核心（Intel / AMD / Apple Silicon） | 8 – 12 cores, multithreaded / high clock<br>8–12 核心，多執行緒／高時脈 |
-| 記憶體 RAM | 16 GB | 32 GB (≥ 64 GB for large projects)<br>32 GB（大量樣本建議 64 GB 以上） |
+| 作業系統 OS | Windows 10 (64‑bit) / macOS 12 / Ubuntu 20.04 | Windows 11 (64‑bit) / macOS 14 / Ubuntu 22.04 |
+| 處理器 CPU | 6 cores (Intel / AMD / Apple Silicon) | 8 – 12 cores, multithreaded / high clock speed |
+| 記憶體 RAM | 16 GB | 32 GB (≥ 64 GB for large multi‑sample projects) |
 | 儲存空間 Disk | SSD, ≥ 50 GB free | NVMe SSD, ≥ 200 GB free |
-| GPU (可選 Optional) | — | CUDA‑capable GPU / Apple M‑series<br>CUDA 顯示卡或 Apple M 系列，可加速視覺化與深度學習 |
-| 網路 Internet | Stable connection ≥ 10 Mbps<br>穩定連線 ≥ 10 Mbps | ≥ 30 Mbps for faster downloads<br>≥ 30 Mbps，以便快速下載資料與套件 |
-| 額外選項 Extras | — | Docker / Singularity & HPC / Cloud accounts<br>Docker／Singularity 及 HPC／雲端帳號，用於重現與大型計算 |
+| GPU (可選 Optional) | — | CUDA‑capable GPU / Apple M‑series for accelerated visualization & deep learning |
+| 網路 Internet | Stable connection ≥ 10 Mbps | ≥ 30 Mbps for faster data & package downloads |
+| 額外選項 Extras | — | Docker / Singularity and HPC / Cloud accounts for reproducibility & large‑scale computing |
 
 ---
 
