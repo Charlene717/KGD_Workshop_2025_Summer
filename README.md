@@ -22,7 +22,7 @@
 | 21:50‑22:10 | 蘇柏嵐 Po‑Lan Su | 空間轉錄組學：實驗技術操作與資料分析概念<br>Spatial Transcriptomics: Wet‑Lab Procedures & Analytical Concepts | [Video](https://www.youtube.com/watch?v=s42Ua84ScM0&list=PLsjV-b9qanZZR0xkebAP-_jaFGwxtnp5d&index=4&t=9s)                       |
 | 22:10‑22:25 | Joanne Jerenice J. Añonuevo | 蟹足腫案例實作經驗分享<br>Keloid Case Study: Practical Implementation Experience  | [Video](https://www.youtube.com/watch?v=g-59ZsDU438&list=PLsjV-b9qanZZR0xkebAP-_jaFGwxtnp5d&index=5&t=9s)                      |
 | 22:25‑22:40 | 許念芸<br>Nien‑Yun Sharon Hsu<br> | 蟹足腫跨物種整合實作經驗分享<br>Cross‑Species Integration in Keloid: Practical Implementation Experience | [Video](https://www.youtube.com/watch?v=Vxo9kj_H56Q&list=PLsjV-b9qanZZR0xkebAP-_jaFGwxtnp5d&index=7&t=472s)                      |
-| 22:40‑23:00 | 張嘉容<br>Chia‑Jung Charlene Chang<br> | 實驗室分析資源導覽與 AI 輔助生物資訊分析技巧<br>Overview of Dry‑Lab Resources & AI‑Assisted Bioinformatics Techniques |
+| 22:40‑23:00 | 張嘉容<br>Chia‑Jung Charlene Chang<br> | 實驗室分析資源導覽與 AI 輔助生物資訊分析技巧<br>Overview of Dry‑Lab Resources & AI‑Assisted Bioinformatics Techniques |   [Video](https://www.youtube.com/watch?v=v1tTLg9Ik94)    |
 
 <br>
 
