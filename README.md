@@ -49,7 +49,7 @@
 | 22:00‑22:15 | 差異基因表現與功能富集分析<br>Differential Gene Expression & Functional Enrichment |
 | 22:15‑22:25 | 細胞間通訊分析<br>Cell‑Cell Communication Analysis |
 | 22:25‑22:35 | 細胞軌跡與擬時序分析方法<br>Trajectory Inference & Pseudotime Analysis |
-| 22:35‑22:50 | 結果評估與分析驗證方法<br>Evaluation & Validation of Analytical Results |
+| 22:35‑22:50 | 結果評估與Loupe Browser視覺化互動<br>Results Evaluation & Loupe Browser Interactive Visualization |
 | 22:50‑23:00 | 根據研究目標選擇與導入適切的分析工具<br>Selecting & Implementing Tools Based on Research Objectives |
 
 </div>
@@ -119,4 +119,4 @@ Install **R ≥ 4.1.3** (lab’s preferred 4.1.3) and **RStudio**
 &nbsp;
 ---
 ## 實驗室網站
-[**KGD Lab**]<https://twkgd.wordpress.com/>
+[**KGD Lab**](https://twkgd.wordpress.com/)
