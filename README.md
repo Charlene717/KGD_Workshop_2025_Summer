@@ -22,7 +22,7 @@
 | 21:50‑22:10 | 蘇柏嵐 Po‑Lan Su | 空間轉錄組學：實驗技術操作與資料分析概念<br>Spatial Transcriptomics: Wet‑Lab Procedures & Analytical Concepts | [Video](https://www.youtube.com/watch?v=s42Ua84ScM0&list=PLsjV-b9qanZZR0xkebAP-_jaFGwxtnp5d&index=4&t=9s)                       |
 | 22:10‑22:25 | Joanne Jerenice J. Añonuevo | 蟹足腫案例實作經驗分享<br>Keloid Case Study: Practical Implementation Experience  | [Video](https://www.youtube.com/watch?v=g-59ZsDU438&list=PLsjV-b9qanZZR0xkebAP-_jaFGwxtnp5d&index=5&t=9s)                      |
 | 22:25‑22:40 | 許念芸<br>Nien‑Yun Sharon Hsu<br> | 蟹足腫跨物種整合實作經驗分享<br>Cross‑Species Integration in Keloid: Practical Implementation Experience | [Video](https://www.youtube.com/watch?v=Vxo9kj_H56Q&list=PLsjV-b9qanZZR0xkebAP-_jaFGwxtnp5d&index=7&t=472s)                      |
-| 22:40‑23:00 | 張嘉容<br>Chia‑Jung Charlene Chan<br>g | 實驗室分析資源導覽與 AI 輔助生物資訊分析技巧<br>Overview of Dry‑Lab Resources & AI‑Assisted Bioinformatics Techniques |
+| 22:40‑23:00 | 張嘉容<br>Chia‑Jung Charlene Chang<br> | 實驗室分析資源導覽與 AI 輔助生物資訊分析技巧<br>Overview of Dry‑Lab Resources & AI‑Assisted Bioinformatics Techniques |
 
 <br>
 
@@ -58,7 +58,7 @@
 ## 實作事前準備 Pre‑Workshop Preparation
 
 ### 1. 電腦與軟體 Computer & Software  
-> **說明 Note:** 單細胞 RNA‑seq 及後續整合／軌跡分析會大量佔用記憶體；若資料規模 > 100 k cells，請優先考慮使用 64 GB RAM 以上或雲端／HPC。  
+> **注意:** 單細胞 RNA‑seq 及後續整合／軌跡分析會大量佔用記憶體；若資料規模 > 100 k cells，請優先考慮使用 64 GB RAM 以上或雲端／HPC。  
 > **Note:** Single‑cell RNA‑seq, downstream integration, and trajectory analyses are memory‑intensive. For datasets larger than 100 k cells, consider machines with ≥ 64 GB RAM or use cloud/HPC resources.
 
 | 規格項目 Spec | **最低配備 Minimum** | **建議配備 Recommended** |
