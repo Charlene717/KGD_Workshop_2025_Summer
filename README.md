@@ -35,7 +35,7 @@
 - **講者 Speakers:** 蘇柏嵐 Po‑Lan Su · 張嘉容 Chia‑Jung Chang (Charlene)
 
 ### 📅 議程 Agenda
-[📑 **議程表下載 (Workshop_2025_0801_Agenda.pdf)**](./Agenda_and_Guidelines/Workshop_2025_0801_Agenda.pdf)
+[📑 **議程表下載 (Workshop_2025_Summer_Part2_0801_Agenda.pdf)**](./Agenda_and_Guidelines/Workshop_2025_Summer_Part2_0801_Agenda.pdf)
 
 <div align="center">
 
