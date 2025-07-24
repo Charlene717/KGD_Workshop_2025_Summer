@@ -119,4 +119,4 @@ Install **R ≥ 4.1.3** (lab’s preferred 4.1.3) and **RStudio**
 &nbsp;
 ---
 ## 實驗室網站
-[KGD Lab]<https://twkgd.wordpress.com/>
+**KGD Lab**<https://twkgd.wordpress.com/>
