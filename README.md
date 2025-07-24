@@ -44,7 +44,7 @@
 | 21:00‑21:10 | 單細胞分析流程總覽及核心概念導讀<br>Overview of scRNA‑seq Workflow with Key Concepts |
 | 21:10‑21:15 | scRNA‑seq 資料下載與預處理策略<br>Strategies for Downloading & Pre‑processing scRNA‑seq Data |
 | 21:15‑21:30 | R 語言基礎導論<br>Foundations of R Programming |
-| 21:30‑21:45 | 品質控制方法、前處理與跨樣本資料整合<br>Quality Control, Pre‑processing & Cross‑Sample Integration |
+| 21:30‑21:45 | 品質控制方法、前處理與跨樣本資料整合<br>Quality Control & Pre‑processing & Cross‑Sample Integration |
 | 21:45‑22:00 | 細胞類型註解與分群<br>Cell‑Type Annotation & Clustering |
 | 22:00‑22:15 | 差異基因表現與功能富集分析<br>Differential Gene Expression & Functional Enrichment |
 | 22:15‑22:25 | 細胞間通訊分析<br>Cell‑Cell Communication Analysis |
@@ -110,7 +110,7 @@ Install **R ≥ 4.1.3** (lab’s preferred 4.1.3) and **RStudio**
 &nbsp;
 ---
 ## 📑 實作作業指引 Practical Assignment Guidelines
-[**實作作業指引檔案 (Workshop_2025_Practical_Assignment_Guidelines.pdf)**](./Agenda_and_Guidelines/Workshop_2025_Practical_Assignment_Guidelines.pdf)  
+[**實作作業指引檔案 (Workshop_2025_Summer_Part3_Practical_Assignment_Guidelines.pdf)**](./Agenda_and_Guidelines/Workshop_2025_Summer_Part3_Practical_Assignment_Guidelines.pdf)  
 
 *本文件詳述作業目的、繳交格式、9 + 1 項 Checkpoints 及評分標準。*  
 *This document outlines the assignment objectives, submission format, 9 + 1 checkpoints, and grading criteria.*
