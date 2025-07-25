@@ -105,8 +105,6 @@ Install **R ≥ 4.1.3** (lab’s preferred 4.1.3) and **RStudio**
 ## 📑 實作作業指引 Practical Assignment Guidelines
 [**實作作業指引檔案 (Workshop_2025_Summer_Part3_Practical_Assignment_Guidelines.pdf)**](./Agenda_and_Guidelines/Workshop_2025_Summer_Part3_Practical_Assignment_Guidelines.pdf)  
 
-*本文件詳述作業目的、繳交格式、9 + 1 項 Checkpoints 及評分標準。*  
-*This document outlines the assignment objectives, submission format, 9 + 1 checkpoints, and grading criteria.*
 
 
 &nbsp;
