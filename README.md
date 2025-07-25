@@ -12,7 +12,6 @@
 - **地點 Venue:** 線上會議 Online Meeting
 
 ### 📅 議程 Agenda
-[📑 **議程表下載 (Workshop_2025_Summer_Part1_0718_Agenda.pdf)**](./Agenda_and_Guidelines/Workshop_2025_Summer_Part1_0718_Agenda.pdf)
 
 | 時間 Time | 報告者 Presenter | 主題 Topic | 
 |-----------|-----------------|------------|
