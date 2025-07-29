@@ -1,5 +1,7 @@
-library(Seurat)
-library(dplyr)
+if(!require('Seurat'))         { install.packages('Seurat');         library(Seurat) }
+if(!require('tidyverse'))      { install.packages('tidyverse');      library(tidyverse) }
+if(!require('dplyr'))          { install.packages('dplyr');          library(dplyr) }
+
 
 
 ## Speed up
