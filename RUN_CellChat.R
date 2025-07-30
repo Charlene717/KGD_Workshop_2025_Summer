@@ -49,8 +49,12 @@ options(future.globals.maxSize = 8 * 1024^3)  # 8GB RAM 限制，可依需求調
 ## Step 2: 準備 Seurat 資料
 ###############################################
 
-# ✅ 將 Seurat v5 多層 assay 合併為單一層（預設會合併為 "data"）
-seurat_obj <- JoinLayers(object = seurat_obj, layers = "data")
+# # ✅ 將 Seurat v5 多層 assay 合併為單一層（預設會合併為 "data"）
+# seurat_obj <- JoinLayers(object = seurat_obj, layers = "data")
+
+# 將 RNA assay 的多層合併為一層（預設合併到 "data" slot）
+seurat_obj[["RNA"]] <- JoinLayers(object = seurat_obj[["RNA"]])
+
 
 
 # 假設你已經有一個 Seurat 物件 seurat_obj，並完成分群
@@ -58,8 +62,13 @@ seurat_obj <- JoinLayers(object = seurat_obj, layers = "data")
 data.input <- GetAssayData(seurat_obj, slot = "data", assay = "RNA")
 meta <- seurat_obj@meta.data
 
-# 建立 CellChat 物件，這裡以 seurat_clusters 作為群組依據
-cellchat <- createCellChat(object = data.input, meta = meta, group.by = "seurat_clusters")
+# # 建立 CellChat 物件，這裡以 seurat_clusters 作為群組依據
+# cellchat <- createCellChat(object = data.input, meta = meta, group.by = "seurat_clusters")
+
+
+# 把原本的 seurat_clusters（例如 "0", "1", "2"）改成 "C0", "C1", ...
+meta$cellchat_clusters <- paste0("C", as.character(seurat_obj$seurat_clusters))
+cellchat <- createCellChat(object = data.input, meta = meta, group.by = "cellchat_clusters")
 
 
 ###############################################
@@ -70,6 +79,7 @@ cellchat <- createCellChat(object = data.input, meta = meta, group.by = "seurat_
 CellChatDB <- CellChatDB.human  # 或 CellChatDB.mouse
 cellchat@DB <- CellChatDB
 
+showDatabaseCategory(CellChatDB)
 
 ###############################################
 ## Step 4: 預處理與篩選 gene-interaction
