@@ -1,3 +1,6 @@
+# seurat_obj <- readRDS("C:/Charlene/Code_GitHub_BioInport2025/KGD_Workshop_2025_Summer/Export_2025062617YDG_Demo/2025062617YDG_Integration.rds")             # 載入儲存好的 Seurat RDS 物件
+
+
 # library(CellChat)
 # 
 # data.input <- GetAssayData(integrated, assay = "RNA", slot = "data")
