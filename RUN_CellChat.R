@@ -49,6 +49,10 @@ options(future.globals.maxSize = 8 * 1024^3)  # 8GB RAM 限制，可依需求調
 ## Step 2: 準備 Seurat 資料
 ###############################################
 
+# ✅ 將 Seurat v5 多層 assay 合併為單一層（預設會合併為 "data"）
+seurat_obj <- JoinLayers(object = seurat_obj, layers = "data")
+
+
 # 假設你已經有一個 Seurat 物件 seurat_obj，並完成分群
 # 取出資料與 metadata
 data.input <- GetAssayData(seurat_obj, slot = "data", assay = "RNA")
