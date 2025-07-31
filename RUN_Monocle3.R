@@ -1,15 +1,18 @@
 ################################################################################
 ## 🔧 載入必要套件
 ################################################################################
-library(Seurat)          # 單細胞分析主套件
-library(monocle3)        # Pseudotime 分析與軌跡重建
-library(SeuratWrappers)  # Seurat 和 Monocle 等工具間的轉換橋接
+if (!require("Seurat"))            { install.packages("Seurat");                                  library(Seurat) }     # ↪ 單細胞分析主套件
+if (!require("tidyverse"))         { install.packages("tidyverse");                               library(tidyverse) }  # ↪ tidyverse: dplyr/ggplot2 等整合工具，方便資料處理
+
+if (!require("monocle3"))          { devtools::install_github('cole-trapnell-lab/monocle3');      library(monocle3) }  # ↪ Pseudotime 分析與軌跡重建
+if (!require("SeuratWrappers"))    { remotes::install_github('satijalab/seurat-wrappers');        library(SeuratWrappers) }  # ↪ Seurat 和 Monocle 等工具間的轉換橋接
+
 
 ################################################################################
 ## 📥 讀取 Seurat 物件，並設定 clustering 身分
 ################################################################################
-seurat_path <- "path/to/your/seurat_all_integrated.rds"
-seurat_all_integrated <- readRDS(seurat_path)             # 載入儲存好的 Seurat RDS 物件
+# seurat_path <- "path/to/your/seurat_all_integrated.rds"
+# seurat_all_integrated <- readRDS(seurat_path)             # 載入儲存好的 Seurat RDS 物件
 Idents(seurat_all_integrated) <- "seurat_clusters"        # 指定 Seurat 用來分群的欄位
 
 ################################################################################
