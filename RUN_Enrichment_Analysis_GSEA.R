@@ -90,4 +90,68 @@ print(plot_dot)
 print(plot_ridge)
 dev.off()
 
+
+##############################################
+## (7) 依關鍵字產經典 GSEA 曲線圖 (可選)   ##
+##############################################
+
+## --- 使用者自訂 --- ##
+kw_vec       <- c("NFKB", "WNT", "TGFB", "TNFA")  # ← 關鍵字 (不分大小寫)
+max_term_plot <- 10                       # ← 最多畫幾條；Inf = 全部
+
+## -------- (7-1) 篩選 term -------------- ##
+# 把 ID 轉大寫再比對關鍵字
+gsea_tbl <- gsea_res@result
+hit_tbl  <- gsea_tbl %>%
+  filter(str_detect(toupper(ID),
+                    paste(kw_vec, collapse = "|"))) %>%
+  arrange(p.adjust) %>%        # 依調整後 p 值排序
+  slice_head(n = max_term_plot)
+
+if (nrow(hit_tbl) == 0) {
+  warning("⚠ 找不到符合關鍵字的 pathway；請檢查 kw_vec")
+} else {
+  
+  ## ------ (7-2) 繪製 gseaplot2 -------- ##
+  library(patchwork)    # 用於排版
+  
+  gsea_plots <- vector("list", nrow(hit_tbl))
+  names(gsea_plots) <- hit_tbl$ID
+  
+  for (i in seq_len(nrow(hit_tbl))) {
+    term_id <- hit_tbl$ID[i]
+    
+    gsea_plots[[i]] <- gseaplot2(
+      gsea_res,
+      geneSetID    = term_id,
+      color        = "steelblue",
+      base_size    = 11,
+      ES_geom      = "line",
+      pvalue_table = TRUE   # 右上顯示 NES / p.adj
+    ) +
+      ggtitle(term_id) +
+      theme(plot.title = element_text(hjust = .5, face = "bold"))
+  }
+  
+  ## ------ (7-3) 儲存 ------------------- ##
+  # ① PDF：每頁一圖
+  pdf(file.path(output_dir,
+                paste0(output_pre, "_GSEA_keywordCurves.pdf")),
+      width = 7, height = 5)
+  for (p in gsea_plots) print(p)
+  dev.off()
+  
+  # ② 個別 PNG（300 dpi）
+  for (nm in names(gsea_plots)) {
+    ggsave(file.path(output_dir,
+                     paste0(output_pre, "_GSEA_", nm, ".png")),
+           plot   = gsea_plots[[nm]],
+           width  = 6, height = 5, dpi = 300)
+  }
+  
+  cat("✔ 已輸出", length(gsea_plots),
+      "張關鍵字 GSEA 曲線圖至：", normalizePath(output_dir), "\n")
+}
+
+
 cat("🎉 GSEA finished!  結果已存於：", normalizePath(output_dir), "\n")
