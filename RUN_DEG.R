@@ -111,7 +111,7 @@ writeLines(gene_lines, "top10_genes_by_cluster.txt")
 #    • 只在指定兩個樣本內比較，同群不同樣本，減少其他批次影響
 ###############################################################################
 DefaultAssay(seurat_all_integrated) <- "RNA"          # 切回原始計數
-Idents(seurat_all_integrated)       <- "seurat_clusters"
+Idents(seurat_all_integrated)       <- "Cell_Type"
 clusters <- levels(seurat_all_integrated)             # 取得所有 cluster 標籤
 
 # 3-1. 僅保留目標樣本
