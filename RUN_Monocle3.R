@@ -154,7 +154,7 @@ ciliated_genes <- list(
     "CALML5","KRT2"
 ) %>% unique()
 
-ciliated_genes <- c("KRT15", "KRT14", "POSTN", "CXCL14", "S100A2", "KRT1", "KRT10")
+# ciliated_genes <- c("KRT15", "KRT14", "POSTN", "CXCL14", "S100A2", "KRT1", "KRT10")
 # ➤ 畫出這些基因在 UMAP 上的分佈情形（可加 show_trajectory_graph = TRUE）
 plot_cells(cds,
            genes = ciliated_genes,
@@ -186,4 +186,74 @@ plot_genes_in_pseudotime(
 )
 
 
+####################################################################################################
+
+
+#### 改用ggplot作圖 ####
+###############################################################################
+##  0. 套件 --------------------------------------------------------------------
+###############################################################################
+library(monocle3)      # pseudotime()、exprs()
+library(tidyverse)     # tibble / dplyr / tidyr / ggplot2
+
+###############################################################################
+##  1. 準備 meta 資訊（細胞層級）----------------------------------------------
+###############################################################################
+meta_df <- tibble(
+  cell           = colnames(Test_lineage_cds),                # 細胞名稱
+  pseudotime     = pseudotime(Test_lineage_cds),              # 直接抓向量
+  seurat_cluster = colData(Test_lineage_cds)$seurat_clusters  # Seurat 分群
+) %>%
+  filter(!is.na(pseudotime))                                  # 可選：拿掉 NA root
+
+###############################################################################
+##  2. 整理表達矩陣 → long format ---------------------------------------------
+###############################################################################
+expr_long <- exprs(Test_lineage_cds)[genes_Test, ] |>
+  as.matrix() |>
+  as.data.frame() |>
+  rownames_to_column("gene") |>
+  pivot_longer(
+    -gene,
+    names_to  = "cell",
+    values_to = "expr"
+  )
+
+###############################################################################
+##  3. 合併 meta ＆ 表達 -------------------------------------------------------
+###############################################################################
+plot_df <- expr_long |>
+  inner_join(meta_df, by = "cell") |>
+  mutate(
+    gene = factor(gene, levels = genes_Test)   # 控制 facet 順序
+  )
+
+###############################################################################
+##  4. ggplot 畫圖 -------------------------------------------------------------
+###############################################################################
+ggplot(plot_df,
+       aes(x      = pseudotime,
+           y      = expr + 1e-6,               # 避免 log10(0)
+           colour = factor(seurat_cluster))) +
+  geom_point(size = 0.6, alpha = 0.65) +       # 散點
+  geom_smooth(aes(group = 1),                  # 每 facet 一條趨勢線
+              method    = "loess",
+              span      = 0.8,
+              colour    = "black",
+              linewidth = 0.5,
+              se        = FALSE) +
+  scale_y_log10() +                            # 與 monocle3 相同的 log10
+  scale_colour_brewer(palette = "Set1",
+                      name    = "seurat_clusters") +
+  facet_wrap(~gene, ncol = 1, scales = "free_y") +
+  theme_classic(base_size = 12) +
+  theme(strip.text.y     = element_text(angle = 0, hjust = 0),
+        legend.position  = "right") +
+  labs(x = "pseudotime", y = "Expression (log10)")
+
+###############################################################################
+##  5. 可選參數 ----------------------------------------------------------------
+# - 想改線性軸：把 scale_y_log10() 換成 scale_y_continuous()
+# - 想要 vertical_jitter: 在 geom_point 加 position = position_jitter(width = 0, height = 0.05)
+###############################################################################
 
