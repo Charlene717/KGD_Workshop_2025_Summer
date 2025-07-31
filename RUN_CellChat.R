@@ -1,4 +1,4 @@
-# seurat_obj <- readRDS("C:/Charlene/Code_GitHub_BioInport2025/KGD_Workshop_2025_Summer/Export_2025062617YDG_Demo/2025062617YDG_Integration.rds")             # 載入儲存好的 Seurat RDS 物件
+# seurat_all_integrated <- readRDS("C:/Charlene/Code_GitHub_BioInport2025/KGD_Workshop_2025_Summer/Export_2025062617YDG_Demo/2025062617YDG_Integration.rds")             # 載入儲存好的 Seurat RDS 物件
 
 ###############################################
 ## Step 1: 安裝與載入套件
@@ -25,23 +25,23 @@ options(future.globals.maxSize = 8 * 1024^3)  # 8GB RAM 限制，可依需求調
 ###############################################
 
 # # ✅ 將 Seurat v5 多層 assay 合併為單一層（預設會合併為 "data"）
-# seurat_obj <- JoinLayers(object = seurat_obj, layers = "data")
+# seurat_all_integrated <- JoinLayers(object = seurat_all_integrated, layers = "data")
 
 # 將 RNA assay 的多層合併為一層（預設合併到 "data" slot）
-seurat_obj[["RNA"]] <- JoinLayers(object = seurat_obj[["RNA"]])
+seurat_all_integrated[["RNA"]] <- JoinLayers(object = seurat_all_integrated[["RNA"]])
 
 
 
-# 假設你已經有一個 Seurat 物件 seurat_obj，並完成分群
+# 假設你已經有一個 Seurat 物件 seurat_all_integrated，並完成分群
 # 取出資料與 metadata
-data.input <- GetAssayData(seurat_obj, slot = "data", assay = "RNA")
-meta <- seurat_obj@meta.data
+data.input <- GetAssayData(seurat_all_integrated, slot = "data", assay = "RNA")
+meta <- seurat_all_integrated@meta.data
 
 # ## 建立 CellChat 物件，這裡以 seurat_clusters 作為群組依據
 # #Bug# cellchat <- createCellChat(object = data.input, meta = meta, group.by = "seurat_clusters")
 # 
 # # 把原本的 seurat_clusters（例如 "0", "1", "2"）改成 "C0", "C1", ...
-# meta$cellchat_clusters <- paste0("C", as.character(seurat_obj$seurat_clusters))
+# meta$cellchat_clusters <- paste0("C", as.character(seurat_all_integrated$seurat_clusters))
 # cellchat <- createCellChat(object = data.input, meta = meta, group.by = "cellchat_clusters")
 
 ## 建立 CellChat 物件，這裡以 Cell_Type 作為群組依據
