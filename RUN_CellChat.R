@@ -99,20 +99,27 @@ cellchat <- aggregateNet(cellchat)                # ↪ 將多重 LR → 單一 
 groupSize <- as.numeric(table(cellchat@idents))   # ↪ 每個 cell type 的細胞數，用於節點大小比例
 
 netVisual_circle(                                 # ↪ 圓環網絡：粗線 = 互動次數；色塊 = cell type
-  cellchat@net$count,
+  cellchat@net$weight,
   vertex.weight = groupSize,                      # ↪ 節點大小依細胞數
   weight.scale  = TRUE,                           # ↪ 線粗-節點大小皆自動縮放
+  title.name = "Interaction weights/strength",    # ↪ 標題名稱
   label.edge    = FALSE                           # ↪ 不顯示邊標籤
 )
+
+netVisual_heatmap(cellchat,measure = c( "weight"),  color.heatmap = "Reds") # ↪ 熱圖
+
+
+cellchat@netP[["pathways"]] # 看有哪些 pathway 有訊號
 
 ## 指定 pathway “GAP” 多圖示範 ---------------------------------------
 netVisual_aggregate(cellchat, signaling = "GAP", layout = "circle") # ↪ 圓環
 par(mfrow = c(1,1))
 netVisual_aggregate(cellchat, signaling = "GAP", layout = "chord")  # ↪ Chord diagram
 par(mfrow = c(1,1))
-netVisual_heatmap(cellchat, signaling = "GAP", color.heatmap = "Reds") # ↪ 熱圖
+netVisual_heatmap(cellchat, signaling = "GAP",measure = c( "weight"), color.heatmap = "Reds") # ↪ 熱圖
 
 netAnalysis_contribution(cellchat, signaling = "GAP")                # ↪ 各 LR 對對此 pathway 貢獻百分比
+
 netVisual_bubble(                                                    # ↪ 氣泡圖，單向 Granular → 全細胞
   cellchat,
   sources.use   = "Granular keratinocytes",
