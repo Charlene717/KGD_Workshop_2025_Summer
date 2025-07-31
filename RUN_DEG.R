@@ -58,8 +58,17 @@ top10_markers <- top10_markers.df %>%  pull(gene)                       # 取出
 
 DoHeatmap(
   object   = seurat_all_integrated,
-  features = top10_markers
-) + NoLegend()
+  features = top10_markers,
+  angle    = 90,                 # 直立文字
+  size     = 3,                  # 字體縮小
+  hjust    = 0                   # ★ 讓文字「向上延伸」
+) +
+  NoLegend() 
+
+# DoHeatmap(
+#   object   = seurat_all_integrated,
+#   features = top10_markers
+# ) + NoLegend()
 
 
 library(readr)
