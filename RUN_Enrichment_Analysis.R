@@ -55,6 +55,7 @@ go_res  <- enrichGO(gene           = Basal_entrez,
 
 plot_GO <- dotplot(go_res, showCategory = 20) +
   ggtitle("GO enrichment – Basal keratinocytes")
+plot_GO
 
 # ---------- 3.2 KEGG ----------
 kegg_res <- enrichKEGG(gene         = Basal_entrez,
@@ -63,6 +64,7 @@ kegg_res <- enrichKEGG(gene         = Basal_entrez,
 
 plot_KEGG <- dotplot(kegg_res, showCategory = 20) +
   ggtitle("KEGG pathways – Basal keratinocytes")
+plot_KEGG
 
 # ---------- 3.3 Reactome ----------
 reac_res <- enrichPathway(gene         = Basal_entrez,
@@ -72,6 +74,7 @@ reac_res <- enrichPathway(gene         = Basal_entrez,
 
 plot_REAC <- dotplot(reac_res, showCategory = 20) +
   ggtitle("Reactome pathways – Basal keratinocytes")
+plot_REAC
 
 ## ====================== ##
 ## 4.  儲存結果與圖檔       ##
