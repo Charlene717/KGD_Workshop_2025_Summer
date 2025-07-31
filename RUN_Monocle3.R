@@ -39,14 +39,59 @@ names(cds@clusters$UMAP$partitions) <- Cells(cds)  # 確保有正確 names
 
 
 ####################################################################################################
+cds_Ori <- cds
+
+plot_cells(cds, color_cells_by = "seurat_clusters")
+
+############################################################
+##  產生僅含指定 Seurat cluster 的 CellDataSet 子集        ##
+##  • 來源物件：cds（Monocle 3 的 CellDataSet）           ##
+##  • 欄位名稱：假設 Seurat cluster 已存為                 ##
+##                colData(cds)$seurat_clusters             ##
+############################################################
+
+## 1. 指定要保留的 Seurat cluster 編號 --------------------
+keep_clusters <- c(0, 1, 2, 3, 4, 6, 9, 10)   # 想保留的群；用向量列出
+
+## 2. 取得符合條件的細胞 barcodes ---------------------------
+cells_use <- colnames(cds)[                    # 取出所有細胞名稱（欄名）
+  colData(cds)$seurat_clusters %in%            # 檢查該細胞的 cluster
+    keep_clusters                              # 若在 keep_clusters 之中 → TRUE
+]                                              # 產生布林向量後回傳符合者
+
+## 3. 建立子集 CellDataSet -------------------------------
+cds <- cds[, cells_use]                 # 只保留篩選出來的細胞
+
+## 4. （選擇性）檢查結果 -------------------------------
+table(colData(cds)$seurat_clusters)      # 應只出現 0,1,2,3,4,6,9,10
+plot_cells(cds, color_cells_by = "seurat_clusters")
+
+
+############################################################
+##  重新計算 cluster 與 partition，再學習 principal graph ##
+############################################################
+
+cds <- cluster_cells(              # 1️⃣ 重新計算 k-NN → Leiden → partition
+  cds,
+  reduction_method = "UMAP",       # 與當前 UMAP embedding 一致
+  resolution = 1e-3                # 視需要調整；只是為了產生 partition
+)
+
+cds <- learn_graph(                # 2️⃣ 現在 partitions 長度吻合 → OK
+  cds,
+  use_partition = TRUE,            # 預設；確保不同 partition 不互連
+  close_loop    = FALSE            # 避免額外閉環
+)
+
 
 
 ################################################################################
 ## 📈 進行 Monocle3 的 graph 重建與 Pseudotime 計算
 ################################################################################
-cds <- learn_graph(cds)     # 建構細胞之間的拓樸結構
-# cds <- learn_graph(cds, use_partition = FALSE, close_loop = FALSE) # 建構細胞之間的拓樸結構
+# cds <- learn_graph(cds)     # 建構細胞之間的拓樸結構
+cds <- learn_graph(cds, use_partition = FALSE, close_loop = FALSE) # 建構細胞之間的拓樸結構
 cds <- order_cells(cds)     # 排定 pseudotime（可互動式選擇 root cell）
+
 
 ################################################################################
 ## 🎨 Pseudotime + Cluster/Group 表現圖
@@ -73,7 +118,7 @@ plot_cells(cds,
 # ➤ 樣本來源 orig.ident 著色（例如不同患者）
 plot_cells(cds,
            reduction_method = "UMAP",
-           color_cells_by = "orig.ident1",
+           color_cells_by = "orig.ident",
            label_cell_groups = TRUE,
            group_label_size = 5,
            label_leaves = FALSE,
