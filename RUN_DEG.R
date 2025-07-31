@@ -51,10 +51,10 @@ cluster_markers <- FindAllMarkers(
 # 2-2. 篩選顯著基因 (FDR < 0.05)，並各取 Top10 畫熱圖
 cluster_markers_sig <- cluster_markers %>% dplyr::filter(p_val_adj < 0.05) # %>% dplyr::filter(avg_log2FC > 0.25)
 
-top10_markers <- cluster_markers_sig %>%
+top10_markers.df <- cluster_markers_sig %>%
   group_by(cluster) %>%
-  top_n(10, avg_log2FC) %>%
-  pull(gene)                       # 取出基因名稱向量
+  top_n(10, avg_log2FC)
+top10_markers <- top10_markers.df %>%  pull(gene)                       # 取出基因名稱向量
 
 DoHeatmap(
   object   = seurat_all_integrated,
@@ -66,19 +66,19 @@ library(readr)
 
 ## 寫出 csv
 write_csv(
-  top10_markers,
-  file = "top10_markers.csv"
+  cluster_markers_sig,
+  file = "markers_sig.csv"
 )
 
 ### 輸出marker list
 ## 確保 cluster 為「字符型別」
 ##    - clusters 有時是數字 (7) 有時是文字 ("Basal"), 轉成 character 可避免日後命名或排序問題
-top10_markers <- top10_markers |>
+top10_markers.df <- top10_markers.df |>
   dplyr::mutate(cluster = as.character(cluster))
 
 ## 依 cluster 收攏 gene，形成「命名 list」
 ##    - list 物件會叫做 gene_list，元素名稱 = cluster 名
-gene_list <- top10_markers |>
+gene_list <- top10_markers.df |>
   dplyr::group_by(cluster) |>
   dplyr::summarise(genes = list(gene), .groups = "drop") |>
   with(setNames(genes, cluster))
