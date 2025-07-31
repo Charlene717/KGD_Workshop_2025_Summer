@@ -11,6 +11,8 @@ if (!require("pheatmap"))    { install.packages("pheatmap");    library(pheatmap
 if (!require("future"))      { install.packages("future");      library(future)      }  # 平行運算
 if (!require("glue"))        { install.packages("glue");        library(glue)        }  # 字串格式化
 if (!require("devtools"))    { install.packages("devtools");    library(devtools)    }  # 安裝 GitHub 套件
+if (!require("purrr"))       { install.packages("purrr");       library(purrr)       }  
+
 if (!require("presto")) {                 # Presto：加速 FindMarkers/FindAllMarkers
   devtools::install_github("immunogenomics/presto")
   library(presto)
@@ -59,6 +61,41 @@ DoHeatmap(
   features = top10_markers
 ) + NoLegend()
 
+
+library(readr)
+
+## 寫出 csv
+write_csv(
+  top10_markers,
+  file = "top10_markers.csv"
+)
+
+### 輸出marker list
+## 確保 cluster 為「字符型別」
+##    - clusters 有時是數字 (7) 有時是文字 ("Basal"), 轉成 character 可避免日後命名或排序問題
+top10_markers <- top10_markers |>
+  dplyr::mutate(cluster = as.character(cluster))
+
+## 依 cluster 收攏 gene，形成「命名 list」
+##    - list 物件會叫做 gene_list，元素名稱 = cluster 名
+gene_list <- top10_markers |>
+  dplyr::group_by(cluster) |>
+  dplyr::summarise(genes = list(gene), .groups = "drop") |>
+  with(setNames(genes, cluster))
+
+
+## 生成 "cluster: geneA, geneB, ..." 形式的字串向量
+library(purrr)   # 若尚未載入，請先 library(purrr)
+
+gene_lines <- imap_chr(
+  gene_list,
+  ~ paste0(.y, ": ", paste(.x, collapse = ", "))
+)
+
+## 寫出 txt
+writeLines(gene_lines, "top10_genes_by_cluster.txt")
+
+
 ###############################################################################
 # 3. 逐群差異表達 (DEG)：比較 GSM6111844 vs GSM6111847 ------------------------
 #    • 只在指定兩個樣本內比較，同群不同樣本，減少其他批次影響
@@ -78,31 +115,36 @@ names(deg_list) <- clusters
 
 # 3-2. 逐群執行 DEG
 for (cl in clusters) {
-  message(glue(">>> 處理 Cluster {cl}"))
+  try({
+    
+    message(glue(">>> 處理 Cluster {cl}"))
+    
+    ## (a) 抓該群細胞；若數量過少可跳過，避免統計不穩
+    cells_in_cluster <- WhichCells(seurat_filtered, idents = cl)
+    if (length(cells_in_cluster) < 50) {                # ←<< 修改門檻
+      warning(glue("Cluster {cl} 細胞數 < 50，略過分析"))
+      next
+    }
+    
+    ## (b) 建立 cluster 子集，並用 orig.ident (樣本 ID) 當分群
+    seurat_sub <- subset(seurat_filtered, cells = cells_in_cluster)
+    Idents(seurat_sub) <- "orig.ident"
+    
+    ## (c) FindMarkers：GSM6111844 vs GSM6111847
+    deg <- FindMarkers(
+      object          = seurat_sub,
+      ident.1         = "GSM6111844",
+      ident.2         = "GSM6111847",
+      logfc.threshold = 0.25,  # fold-change 門檻
+      min.pct         = 0.10   # 基因表現百分比門檻
+    ) %>%
+      rownames_to_column("gene") %>%        # 轉成顯式 gene 欄位
+      mutate(cluster = cl)                  # 記錄來源 cluster
+    
+    deg_list[[cl]] <- deg                   # 收進 list
+    
+  })
   
-  ## (a) 抓該群細胞；若數量過少可跳過，避免統計不穩
-  cells_in_cluster <- WhichCells(seurat_filtered, idents = cl)
-  if (length(cells_in_cluster) < 50) {                # ←<< 修改門檻
-    warning(glue("Cluster {cl} 細胞數 < 50，略過分析"))
-    next
-  }
-  
-  ## (b) 建立 cluster 子集，並用 orig.ident (樣本 ID) 當分群
-  seurat_sub <- subset(seurat_filtered, cells = cells_in_cluster)
-  Idents(seurat_sub) <- "orig.ident"
-  
-  ## (c) FindMarkers：GSM6111844 vs GSM6111847
-  deg <- FindMarkers(
-    object          = seurat_sub,
-    ident.1         = "GSM6111844",
-    ident.2         = "GSM6111847",
-    logfc.threshold = 0.25,  # fold-change 門檻
-    min.pct         = 0.10   # 基因表現百分比門檻
-  ) %>%
-    rownames_to_column("gene") %>%        # 轉成顯式 gene 欄位
-    mutate(cluster = cl)                  # 記錄來源 cluster
-  
-  deg_list[[cl]] <- deg                   # 收進 list
 }
 
 ###############################################################################
