@@ -12,10 +12,10 @@ plan(multicore, workers = 20)
 options(future.globals.maxSize = 2048*100 * 1024^2) # Set memory limit to ~204.8 GB
 ################################################################################
 
+DefaultAssay(seurat_all_integrated) <- "integrated"
 
 # 設定群組標籤為 seurat_clusters
 Idents(seurat_all_integrated) <- "seurat_clusters"
-
 # Idents(seurat_all_integrated) <- "celltype"
 
 
