@@ -32,6 +32,9 @@ options(future.globals.maxSize = 200 * 1024^3)  # ≈ 200 GB，防止「記憶�
 # 2. 整體叢集 (seurat_clusters) Marker 基因偵測  -------------------------------
 #    • 以整合 (integrated) 資料層做差異分析，能降低批次效應
 ###############################################################################
+# 要先快速檢查聚類合理性、做示範熱圖: integrated + FindAllMarkers()
+# 新版: 想找出「每個樣本都適用」的穩定 Marker: FindConservedMarkers()
+
 DefaultAssay(seurat_all_integrated) <- "integrated"  # 指向整合矩陣
 Idents(seurat_all_integrated)       <- "seurat_clusters"  # 設定目前分群
 
@@ -44,7 +47,7 @@ cluster_markers <- FindAllMarkers(
 )
 
 # 2-2. 篩選顯著基因 (FDR < 0.05)，並各取 Top10 畫熱圖
-cluster_markers_sig <- cluster_markers %>% filter(p_val_adj < 0.05)
+cluster_markers_sig <- cluster_markers %>% dplyr::filter(p_val_adj < 0.05) # %>% dplyr::filter(avg_log2FC > 0.25)
 
 top10_markers <- cluster_markers_sig %>%
   group_by(cluster) %>%
