@@ -8,25 +8,25 @@ library(SeuratWrappers)  # Seurat 和 Monocle 等工具間的轉換橋接
 ################################################################################
 ## 📥 讀取 Seurat 物件，並設定 clustering 身分
 ################################################################################
-seurat_path <- "path/to/your/seurat_obj.rds"
-seurat_obj <- readRDS(seurat_path)             # 載入儲存好的 Seurat RDS 物件
-Idents(seurat_obj) <- "seurat_clusters"        # 指定 Seurat 用來分群的欄位
+seurat_path <- "path/to/your/seurat_all_integrated.rds"
+seurat_all_integrated <- readRDS(seurat_path)             # 載入儲存好的 Seurat RDS 物件
+Idents(seurat_all_integrated) <- "seurat_clusters"        # 指定 Seurat 用來分群的欄位
 
 ################################################################################
 ## 🔁 將 Seurat 轉換為 Monocle3 的 CellDataSet (CDS)
 ################################################################################
-cds <- as.cell_data_set(seurat_obj)            # Seurat ➜ Monocle 格式
+cds <- as.cell_data_set(seurat_all_integrated)            # Seurat ➜ Monocle 格式
 
 # ➕ 把 metadata 合併到 colData（避免重複欄位）
-meta_to_add <- seurat_obj@meta.data
+meta_to_add <- seurat_all_integrated@meta.data
 meta_to_add <- meta_to_add[, !colnames(meta_to_add) %in% colnames(colData(cds))]
 colData(cds) <- cbind(colData(cds), meta_to_add)
 
 # ➕ 把原本的 Seurat UMAP 降維結果寫入 Monocle3 的 reducedDims slot
-reducedDims(cds)$UMAP <- Embeddings(seurat_obj, reduction = "umap")
+reducedDims(cds)$UMAP <- Embeddings(seurat_all_integrated, reduction = "umap")
 
 # ➕ 將 Seurat 分群結果複製進 Monocle3（供 plot_cells 使用）
-cds@clusters$UMAP$clusters <- factor(Idents(seurat_obj))
+cds@clusters$UMAP$clusters <- factor(Idents(seurat_all_integrated))
 
 # ⚠️ 手動指定所有細胞都屬於同一個 partition，否則後續會報錯
 cds@clusters$UMAP$partitions <- factor(rep(1, length(Cells(cds))))
