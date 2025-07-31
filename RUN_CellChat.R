@@ -1,156 +1,149 @@
-# seurat_all_integrated <- readRDS("C:/Charlene/Code_GitHub_BioInport2025/KGD_Workshop_2025_Summer/Export_2025062617YDG_Demo/2025062617YDG_Integration.rds")             # 載入儲存好的 Seurat RDS 物件
+##########################################################
+## 讀取 Seurat 物件（示範路徑，先註解起來以免誤執行）
+##########################################################
+# seurat_all_integrated <- readRDS(
+#   "C:/Charlene/Code_GitHub_BioInport2025/KGD_Workshop_2025_Summer/Export_2025062617YDG_Demo/2025062617YDG_Integration.rds"
+# )  # ← 從硬碟載入先前整合好的 Seurat 物件，包含所有細胞表達與 metadata
 
-###############################################
-## Step 1: 安裝與載入套件
-###############################################
-if (!require("Seurat"))       { install.packages("Seurat");         library(Seurat) }
-if (!require("tidyverse"))    { install.packages("tidyverse");      library(tidyverse) }
-if (!require("ggplot2"))      { install.packages("ggplot2");        library(ggplot2) }
-if (!require("patchwork"))    { install.packages("patchwork");      library(patchwork) }
-if (!require("future"))       { install.packages("future");         library(future) }
 
-if (!require("remotes"))      { install.packages("remotes");        library(remotes) }
+##########################################################
+## Step 1：安裝與載入套件
+##########################################################
+if (!require("Seurat"))        { install.packages("Seurat");         library(Seurat) }     # ↪ 若尚未安裝 Seurat 就自動安裝；安裝後載入
+if (!require("tidyverse"))     { install.packages("tidyverse");      library(tidyverse) }  # ↪ tidyverse: dplyr/ggplot2 等整合工具，方便資料處理
+if (!require("ggplot2"))       { install.packages("ggplot2");        library(ggplot2) }    # ↪ 畫圖核心：CellChat 某些函式需依賴 ggplot2
+if (!require("patchwork"))     { install.packages("patchwork");      library(patchwork) }  # ↪ 組合多圖用，常見於 Seurat/CellChat 視覺化
+if (!require("future"))        { install.packages("future");         library(future) }     # ↪ 提供平行運算 (multisession) ，加速大型計算
+
+if (!require("remotes"))       { install.packages("remotes");        library(remotes) }    # ↪ 從 GitHub 安裝套件的輔助工具
 if (!requireNamespace("CellChat", quietly = TRUE)) {
-  remotes::install_github("sqjin/CellChat"); library(CellChat)
+  remotes::install_github("sqjin/CellChat")                           # ↪ 從 GitHub 安裝最新版 CellChat
+  library(CellChat)                                                   # ↪ 載入 CellChat 套件
 }
 
 
-# 可選：加速處理（根據 CPU 核心數調整 workers）
-plan("multisession", workers = 4)  
-options(future.globals.maxSize = 8 * 1024^3)  # 8GB RAM 限制，可依需求調整
+## 可選：設定平行運算參數以提速 (根據硬體調整) --------------------------
+plan("multisession", workers = 4)                 # ↪ 使用 4 個本地 CPU 執行緒並行；Windows/macOS 無需額外套件
+options(future.globals.maxSize = 8 * 1024^3)      # ↪ 允許 future 物件佔用最大 8 GB RAM，避免大型矩陣拋錯
 
 
-###############################################
-## Step 2: 準備 Seurat 資料
-###############################################
+##########################################################
+## Step 2：準備 Seurat 資料
+##########################################################
 
-# # ✅ 將 Seurat v5 多層 assay 合併為單一層（預設會合併為 "data"）
-# seurat_all_integrated <- JoinLayers(object = seurat_all_integrated, layers = "data")
 
+#Bug# seurat_all_integrated <- JoinLayers(object = seurat_all_integrated, layers = "data")
+
+# ✅ 若使用 Seurat v5、RNA assay 會預設多層 (layers) 儲存；先合併到單層 “data”
 # 將 RNA assay 的多層合併為一層（預設合併到 "data" slot）
-seurat_all_integrated[["RNA"]] <- JoinLayers(object = seurat_all_integrated[["RNA"]])
+seurat_all_integrated[["RNA"]] <- JoinLayers(object = seurat_all_integrated[["RNA"]])  # ↪ 將 raw / normalized / scaled 圖層合併，留方便給 CellChat 用的 data slot
 
+# 取出「gene × cell」表現矩陣 (log-normalized counts) -------------------
+data.input <- GetAssayData(                       # ↪ 從 Seurat 物件中取資料
+  object = seurat_all_integrated,
+  slot   = "data",                                # ↪ 取 log-normalized 表達值；CellChat 以此估算配體/受體活性
+  assay  = "RNA"
+)
 
+# 取出細胞 metadata（每細胞一列，包括分群資訊） --------------------------
+meta <- seurat_all_integrated@meta.data           # ↪ 用於後續指定群組 (group.by)
 
-# 假設你已經有一個 Seurat 物件 seurat_all_integrated，並完成分群
-# 取出資料與 metadata
-data.input <- GetAssayData(seurat_all_integrated, slot = "data", assay = "RNA")
-meta <- seurat_all_integrated@meta.data
-
-# ## 建立 CellChat 物件，這裡以 seurat_clusters 作為群組依據
-# #Bug# cellchat <- createCellChat(object = data.input, meta = meta, group.by = "seurat_clusters")
-# 
-# # 把原本的 seurat_clusters（例如 "0", "1", "2"）改成 "C0", "C1", ...
-# meta$cellchat_clusters <- paste0("C", as.character(seurat_all_integrated$seurat_clusters))
+## 建議：若群組欄位名稱含特殊字元，先轉成簡潔 ID -----------------------
+# meta$cellchat_clusters <- paste0("C", seurat_all_integrated$seurat_clusters)  # ↪ 範例：把 0/1/2… 變成 C0/C1/C2…
 # cellchat <- createCellChat(object = data.input, meta = meta, group.by = "cellchat_clusters")
 
-## 建立 CellChat 物件，這裡以 Cell_Type 作為群組依據
-cellchat <- createCellChat(object = data.input, meta = meta, group.by = "Cell_Type")
-
-###############################################
-## Step 3: 指定物種資料庫
-###############################################
-
-# 若為人類資料，使用 CellChatDB.human；小鼠請改用 CellChatDB.mouse
-CellChatDB <- CellChatDB.human  # 或 CellChatDB.mouse
-cellchat@DB <- CellChatDB
-
-showDatabaseCategory(CellChatDB)
-
-###############################################
-## Step 4: 預處理與篩選 gene-interaction
-###############################################
-
-# 選取 database 中有用的基因
-cellchat <- subsetData(cellchat)  
-
-# 偵測高度表現的配體/受體
-cellchat <- identifyOverExpressedGenes(cellchat)
-cellchat <- identifyOverExpressedInteractions(cellchat)
-
-# # 加入蛋白質交互網路（PPI network）
-# cellchat <- projectData(cellchat, PPI.human)  # human 為例，mouse 可忽略
+## 在此示範以 “Cell_Type” 欄位作群組 -------------------------------
+cellchat <- createCellChat(                       # ↪ 建立 CellChat 物件
+  object  = data.input,                           # ↪ 表達矩陣
+  meta    = meta,                               
+  group.by = "Cell_Type"                          # ↪ 依照 Cell_Type 欄位 (如 Basal, Spinous, Fibroblast…)
+)
 
 
-###############################################
-## Step 5: 推論細胞間通訊網絡
-###############################################
-
-# 推論通訊概率
-cellchat <- computeCommunProb(cellchat)
-
-# 過濾至少出現在多少細胞以上的互動（建議 10）
-cellchat <- filterCommunication(cellchat, min.cells = 10)
-
-# 顯示互動資料框
-df.net <- subsetCommunication(cellchat)
-
-# pathway 層級通訊
-cellchat <- computeCommunProbPathway(cellchat)
-
-# 整合 network
-cellchat <- aggregateNet(cellchat)
+##########################################################
+## Step 3：指定物種資料庫 (human / mouse)
+##########################################################
+CellChatDB <- CellChatDB.human                    # ↪ 人類資料庫；若是 Mus musculus 改 CellChatDB.mouse
+cellchat@DB <- CellChatDB                         # ↪ 將資料庫掛到 cellchat 物件
+showDatabaseCategory(CellChatDB)                  # ↪ 列出資料庫中的互動分類 (Secreted, ECM, Cell–Cell Contact)
 
 
-###############################################
-## Step 6: 可視化 CellChat 網絡
-###############################################
+##########################################################
+## Step 4：預處理與基因篩選
+##########################################################
 
-# 查看每個群組的細胞數量
-groupSize <- as.numeric(table(cellchat@idents))
+cellchat <- subsetData(cellchat)                  # ↪ 只保留資料庫內存在的配體/受體基因，降低矩陣維度
+cellchat <- identifyOverExpressedGenes(cellchat)  # ↪ 依群組計算 Z-score，挑高表達基因
+cellchat <- identifyOverExpressedInteractions(cellchat)  # ↪ 結合上一步基因表達結果，鎖定可能活化的 LR 對
 
-# 繪製總體通訊量的網絡圖（線粗代表互動多寡）
-netVisual_circle(cellchat@net$count, vertex.weight = groupSize, weight.scale = TRUE, label.edge = FALSE)
-
-
-# 繪製某 pathway 的網絡（例：GAP）
-cellchat@netP$pathways # %>% head()
-netVisual_aggregate(cellchat, signaling = "GAP", layout = "circle")
-
-# Chord diagram
-par(mfrow=c(1,1))
-netVisual_aggregate(cellchat, signaling = "GAP", layout = "chord")
-
-# Heatmap
-par(mfrow=c(1,1))
-netVisual_heatmap(cellchat, signaling = "GAP", color.heatmap = "Reds")
-
-netAnalysis_contribution(cellchat, signaling = "GAP")
+# （選擇性）投影到 PPI 網絡以納入複合體資料 -------------------------
+# cellchat <- projectData(cellchat, PPI.human)    # ↪ 用人類 PPI 網絡加強複合體關係 (mouse 可省略)
 
 
-netVisual_bubble(cellchat, sources.use = "Granular keratinocytes", targets.use = levels(cellchat@idents), remove.isolate = FALSE)
+##########################################################
+## Step 5：推論細胞間通訊網絡
+##########################################################
+
+cellchat <- computeCommunProb(cellchat)           # ↪ 依平均表達量 × scale factor → 算每對 cell type 間 LR 機率
+cellchat <- filterCommunication(cellchat, min.cells = 10)  # ↪ 至少有 10 個細胞的群組才保留互動，避免統計不穩
+df.net   <- subsetCommunication(cellchat)         # ↪ 匯出資料框查看所有顯著 LR 對 (可寫 csv)
+
+cellchat <- computeCommunProbPathway(cellchat)    # ↪ 進一步將 LR 對匯總到訊號 pathway 層級
+cellchat <- aggregateNet(cellchat)                # ↪ 將多重 LR → 單一 pathway 網絡，方便後續視覺化
 
 
+##########################################################
+## Step 6：網絡可視化
+##########################################################
 
-###############################################
-## Step 7: 推論細胞在通訊中的角色（中心性分析）
-###############################################
+groupSize <- as.numeric(table(cellchat@idents))   # ↪ 每個 cell type 的細胞數，用於節點大小比例
 
-# 計算中心性（例如傳送者、接收者）
-cellchat <- netAnalysis_computeCentrality(cellchat, slot.name = "netP")
+netVisual_circle(                                 # ↪ 圓環網絡：粗線 = 互動次數；色塊 = cell type
+  cellchat@net$count,
+  vertex.weight = groupSize,                      # ↪ 節點大小依細胞數
+  weight.scale  = TRUE,                           # ↪ 線粗-節點大小皆自動縮放
+  label.edge    = FALSE                           # ↪ 不顯示邊標籤
+)
 
-# 顯示特定 pathway 的角色（例：GAP）
-netAnalysis_signalingRole_network(cellchat, signaling = "GAP")
+## 指定 pathway “GAP” 多圖示範 ---------------------------------------
+netVisual_aggregate(cellchat, signaling = "GAP", layout = "circle") # ↪ 圓環
+par(mfrow = c(1,1))
+netVisual_aggregate(cellchat, signaling = "GAP", layout = "chord")  # ↪ Chord diagram
+par(mfrow = c(1,1))
+netVisual_heatmap(cellchat, signaling = "GAP", color.heatmap = "Reds") # ↪ 熱圖
+
+netAnalysis_contribution(cellchat, signaling = "GAP")                # ↪ 各 LR 對對此 pathway 貢獻百分比
+netVisual_bubble(                                                    # ↪ 氣泡圖，單向 Granular → 全細胞
+  cellchat,
+  sources.use   = "Granular keratinocytes",
+  targets.use   = levels(cellchat@idents),
+  remove.isolate = FALSE
+)
 
 
-###############################################
-## Step 8: pathway 特定通訊熱圖
-###############################################
+##########################################################
+## Step 7：中心性分析 (辨識發送者 / 接收者)
+##########################################################
+cellchat <- netAnalysis_computeCentrality(cellchat, slot.name = "netP") # ↪ 算 betweenness、in/out degree…
 
-# 繪製所有通訊路徑的細胞通訊角色熱圖（發送與接收）
-netAnalysis_signalingRole_heatmap(cellchat, pattern = "all")
+netAnalysis_signalingRole_network(                                     # ↪ 在 pathway 網絡中標記主要 sender/receiver
+  cellchat,
+  signaling = "GAP"
+)
 
-netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing") + 
-  netAnalysis_signalingRole_heatmap(cellchat, pattern = "incoming")
- 
 
-###############################################
-## Step 9: 儲存結果
-###############################################
+##########################################################
+## Step 8：通訊角色熱圖 (整體或分向)
+##########################################################
+netAnalysis_signalingRole_heatmap(cellchat, pattern = "all")           # ↪ Sender + Receiver 混合視角
+netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing") +    # ↪ 只看發送
+  netAnalysis_signalingRole_heatmap(cellchat, pattern = "incoming")    # ↪ 只看接收
 
-# 儲存 CellChat 分析結果
-saveRDS(cellchat, file = "cellchat_result.rds")
 
-# 若要日後讀取：
+##########################################################
+## Step 9：儲存 / 讀取 CellChat 物件
+##########################################################
+saveRDS(cellchat, file = "cellchat_result.rds")  # ↪ 將分析全貌 (含網絡/圖) 序列化保存
+
+# 之後可透過 readRDS() 直接載回：
 # cellchat <- readRDS("cellchat_result.rds")
-
