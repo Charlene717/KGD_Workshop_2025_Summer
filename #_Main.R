@@ -98,6 +98,7 @@ sessionInfo()  # 亦於 Console 顯示，方便即時檢查
 
 
 #### Export loupeR ####
+Set_Run_loupeR <- TRUE
 if(Set_Run_loupeR){
   if (!require('loupeR')) {remotes::install_github("10xGenomics/loupeR"); library(loupeR)}
   loupeR::setup()
