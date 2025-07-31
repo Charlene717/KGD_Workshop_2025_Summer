@@ -169,7 +169,7 @@ plot_cells(cds,
 ################################################################################
 ## 🧪 測試基因集：任意子集的 pseudotime 表現
 ################################################################################
-genes_Test <-  c("KRT15", "KRT14", "POSTN", "CXCL14", "S100A2", "KRT1", "KRT10")  # ← "TGGFB1" 更正為 "TGFB1"
+genes_Test <-  c("KRT15", "KRT14", "POSTN", "CXCL14", "S100A2", "KRT1", "KRT10")  
 Test_lineage_cds <- cds[rowData(cds)$gene_short_name %in% genes_Test, ]
 Test_lineage_cds <- order_cells(Test_lineage_cds)
 
