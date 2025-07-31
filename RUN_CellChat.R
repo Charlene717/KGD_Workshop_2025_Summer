@@ -1,44 +1,19 @@
 # seurat_obj <- readRDS("C:/Charlene/Code_GitHub_BioInport2025/KGD_Workshop_2025_Summer/Export_2025062617YDG_Demo/2025062617YDG_Integration.rds")             # 載入儲存好的 Seurat RDS 物件
 
-
-# library(CellChat)
-# 
-# data.input <- GetAssayData(integrated, assay = "RNA", slot = "data")
-# meta <- data.frame(group = Idents(integrated), row.names = colnames(integrated))
-# cellchat <- createCellChat(data.input, meta = meta, group.by = "group")
-# cellchat@DB <- CellChatDB.human
-# 
-# # Analysis workflow
-# cellchat <- subsetData(cellchat)
-# cellchat <- identifyOverExpressedGenes(cellchat)
-# cellchat <- computeCommunProb(cellchat)
-# cellchat <- computeCommunProbPathway(cellchat)
-# cellchat <- aggregateNet(cellchat)
-# 
-# # Visualize communication circle plot
-# netVisual_circle(cellchat@net$count)
-
-
 ###############################################
 ## Step 1: 安裝與載入套件
 ###############################################
+if (!require("Seurat"))       { install.packages("Seurat");         library(Seurat) }
+if (!require("tidyverse"))    { install.packages("tidyverse");      library(tidyverse) }
+if (!require("ggplot2"))      { install.packages("ggplot2");        library(ggplot2) }
+if (!require("patchwork"))    { install.packages("patchwork");      library(patchwork) }
+if (!require("future"))       { install.packages("future");         library(future) }
 
-# 安裝 remotes 套件（若尚未安裝）
-if (!requireNamespace("remotes", quietly = TRUE)) {
-  install.packages("remotes")
-}
-
-# 安裝 CellChat
+if (!require("remotes"))      { install.packages("remotes");        library(remotes) }
 if (!requireNamespace("CellChat", quietly = TRUE)) {
-  remotes::install_github("sqjin/CellChat")
+  remotes::install_github("sqjin/CellChat"); library(CellChat)
 }
 
-# 載入必要套件
-library(CellChat)
-library(patchwork)
-library(Seurat)
-library(ggplot2)
-library(future)
 
 # 可選：加速處理（根據 CPU 核心數調整 workers）
 plan("multisession", workers = 4)  
