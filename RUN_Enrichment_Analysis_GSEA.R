@@ -39,9 +39,20 @@ deg_df <- left_join(deg_df, sym2ent,
                     by = c("gene" = "SYMBOL")) %>% drop_na(ENTREZID)
 
 # 2-4 建 gene_rank：named numeric 向量
-gene_rank <- deframe(deg_df %>%                   # 取兩欄組成向量
-                      dplyr::select(ENTREZID, !!score_col)) 
-gene_rank <- sort(gene_rank, decreasing = TRUE)   # 由大到小排序
+# gene_rank <- deframe(deg_df %>%                   # 取兩欄組成向量
+#                       dplyr::select(ENTREZID, !!score_col)) 
+# gene_rank <- sort(gene_rank, decreasing = TRUE)   # 由大到小排序
+# 假設 deg_df 仍是你在步驟 (2) 建立的資料框
+gene_rank <- setNames(
+  as.numeric(deg_df[[score_col]]),   # ← 這一行務必 as.numeric()
+  deg_df$ENTREZID
+)
+gene_rank <- sort(gene_rank, decreasing = TRUE)
+
+# Double-check
+str(gene_rank)        # 應顯示 "Named num [1:...]"，名字是 ENTREZID
+sum(is.na(gene_rank)) # 應為 0
+
 
 ## ---------------- (3) 取得 MSigDB 基因集 ---------------- ##
 species <- "Homo sapiens"
