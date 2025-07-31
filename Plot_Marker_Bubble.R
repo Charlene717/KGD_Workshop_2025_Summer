@@ -61,30 +61,6 @@ plot_df <- expr_long |>
 plot_df$gene_ct <- factor(plot_df$gene_ct,
                           levels = rev(unique(plot_df$gene_ct)))
 
-###############################################################################
-## 4. 畫泡泡圖
-###############################################################################
-library(ggplot2)
-p <- ggplot(plot_df, aes(x = cluster, y = gene_ct)) +
-  geom_point(aes(size = pct_exp, colour = avg_exp)) +
-  scale_colour_gradient(low = "white", high = "darkred") +
-  scale_size(range = c(0, 8)) +
-  facet_grid(CellType ~ ., scales = "free_y", space = "free_y") +
-  labs(
-    x      = "Seurat cluster",
-    y      = NULL,
-    size   = "% cells",
-    colour = "Avg expr",
-    title  = "KGD 皮膚細胞 Marker Bubble Plot"
-  ) +
-  theme_bw() +
-  theme(
-    axis.text.y  = element_text(size = 6),
-    plot.title   = element_text(hjust = 0.5, size = 24)
-  )
-
-p
-
 
 ###############################################################################
 ## 4. 畫泡泡圖（x = gene, facet = CellType；y = Seurat cluster）
