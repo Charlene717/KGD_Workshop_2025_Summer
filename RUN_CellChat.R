@@ -102,8 +102,23 @@ groupSize <- as.numeric(table(cellchat@idents))
 # 繪製總體通訊量的網絡圖（線粗代表互動多寡）
 netVisual_circle(cellchat@net$count, vertex.weight = groupSize, weight.scale = TRUE, label.edge = FALSE)
 
-# 繪製某 pathway 的網絡（例：TGFb）
-netVisual_aggregate(cellchat, signaling = "TGFb", layout = "circle")
+
+# 繪製某 pathway 的網絡（例：GAP）
+cellchat@netP$pathways # %>% head()
+netVisual_aggregate(cellchat, signaling = "GAP", layout = "circle")
+
+# Chord diagram
+par(mfrow=c(1,1))
+netVisual_aggregate(cellchat, signaling = "GAP", layout = "chord")
+
+# Heatmap
+par(mfrow=c(1,1))
+netVisual_heatmap(cellchat, signaling = "GAP", color.heatmap = "Reds")
+
+netAnalysis_contribution(cellchat, signaling = "GAP")
+
+
+netVisual_bubble(cellchat, sources.use = "Granular keratinocytes", targets.use = levels(cellchat@idents), remove.isolate = FALSE)
 
 
 
@@ -114,8 +129,8 @@ netVisual_aggregate(cellchat, signaling = "TGFb", layout = "circle")
 # 計算中心性（例如傳送者、接收者）
 cellchat <- netAnalysis_computeCentrality(cellchat, slot.name = "netP")
 
-# 顯示特定 pathway 的角色（例：CXCL）
-netAnalysis_signalingRole_network(cellchat, signaling = "CXCL")
+# 顯示特定 pathway 的角色（例：GAP）
+netAnalysis_signalingRole_network(cellchat, signaling = "GAP")
 
 
 ###############################################
@@ -130,21 +145,7 @@ netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing") +
  
 
 ###############################################
-## Step 9: 模式識別（Pattern discovery）
-###############################################
-
-# 發送訊息的 pattern 模式
-cellchat <- identifyCommunicationPatterns(cellchat, pattern = "outgoing")
-
-# 可視化模式（Pattern 1 為例）
-netAnalysis_river(cellchat, pattern = 1)
-
-# 氣泡圖視覺化 pattern
-netAnalysis_dot(cellchat, pattern = 1)
-
-
-###############################################
-## Step 10: 儲存結果
+## Step 9: 儲存結果
 ###############################################
 
 # 儲存 CellChat 分析結果
