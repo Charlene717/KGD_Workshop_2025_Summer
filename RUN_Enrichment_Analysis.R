@@ -1,192 +1,96 @@
-Name_ExportFolder_EA <- paste0(Name_ExportFolder,"/Enrichment Analysis") 
-# Create export folder if it does not exist
-if (!dir.exists(Name_ExportFolder_EA)){dir.create(Name_ExportFolder_EA)}
+###########################################
+##  Basal keratinocytes ORA – R Script   ##
+###########################################
 
-###################################################################################
-#### Enrichment Analysis ####
-# # 基因名稱轉換 (SYMBOL -> ENTREZID)
-# deg_upregulated_entrez <- bitr(deg_upregulated_genes_df$SYMBOL, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db)$ENTREZID
-# deg_downregulated_entrez <- bitr(deg_downregulated_genes_df$SYMBOL, fromType = "SYMBOL", toType = "ENTREZID", OrgDb = org.Hs.eg.db)$ENTREZID
+## ============================= ##
+## 0. 套件安裝與載入（無 pacman） ##
+## ============================= ##
+if (!require("tidyverse"))     { install.packages("tidyverse");     library(tidyverse) }
+if (!require("clusterProfiler")){ install.packages("clusterProfiler"); library(clusterProfiler) }
+if (!require("org.Hs.eg.db"))   { BiocManager::install("org.Hs.eg.db"); library(org.Hs.eg.db) }
+if (!require("ReactomePA"))     { BiocManager::install("ReactomePA");   library(ReactomePA) }
+if (!require("ggplot2"))        { install.packages("ggplot2");          library(ggplot2) }
 
+## ========================== ##
+## 1. 擷取 Basal keratinocyte ##
+## ========================== ##
+# 假設 top25_lines 已存在（字串向量）
+# 取出包含 "Basal keratinocytes" 的元素
+basal_line  <- top25_lines[grepl("^Basal keratinocytes", names(top25_lines))]
+# 去除前綴 "Basal keratinocytes: " 並拆成基因向量
+Basal_genes <- basal_line %>%
+  sub("^[^:]+:\\s*", "", .) %>%         # 去掉「Basal keratinocytes:」
+  str_split(",\\s*") %>%                # 逗號切分
+  unlist() %>%                          # 轉成向量
+  unique()                              # 移除重複
 
-# 基因名稱轉換 (ENSEMBL -> ENTREZID)
-deg_upregulated_entrez <- bitr(deg_upregulated_genes_df$ENSEMBL, fromType = "ENSEMBL", toType = "ENTREZID", OrgDb = org.Hs.eg.db)$ENTREZID
-deg_downregulated_entrez <- bitr(deg_downregulated_genes_df$ENSEMBL, fromType = "ENSEMBL", toType = "ENTREZID", OrgDb = org.Hs.eg.db)$ENTREZID
+# 檢查結果
+print(Basal_genes)
 
+## ======================================== ##
+## 2. SYMBOL → ENTREZID 轉換（clusterProfiler::bitr） ##
+## ======================================== ##
+Basal_entrez <- bitr(Basal_genes,
+                     fromType = "SYMBOL",
+                     toType   = "ENTREZID",
+                     OrgDb    = org.Hs.eg.db) %>%
+  pull(ENTREZID) %>% unique()
 
+## ======================= ##
+## 3. ORA – GO / KEGG / RE ##
+## ======================= ##
+# 統一輸出設定
+output_dir    <- "."                     # 若想存到別處，改成 "path/to/dir"
+output_prefix <- "BasalKeratinocytes_ORA"
 
-#### GO 富集分析 ####
-try({
-  go_up <- enrichGO(
-    gene = deg_upregulated_entrez,
-    OrgDb = org.Hs.eg.db,
-    keyType = "ENTREZID",
-    ont = "ALL",   # 分析所有的 GO 分類 (BP, MF, CC)
-    pAdjustMethod = "BH",
-    pvalueCutoff = 0.01,
-    qvalueCutoff = 0.05,
-    readable = TRUE
-  ) 
-  
-  PlotDot_GO_UP <- dotplot(go_up, showCategory = 20) + ggtitle("GO Enrichment Analysis of Upregulated Genes")
-  PlotDot_GO_UP
-  
-})
+# ---------- 3.1 GO ----------
+go_res  <- enrichGO(gene           = Basal_entrez,
+                    OrgDb          = org.Hs.eg.db,
+                    keyType        = "ENTREZID",
+                    ont            = "ALL",
+                    pAdjustMethod  = "BH",
+                    pvalueCutoff   = 0.05,
+                    qvalueCutoff   = 0.10,
+                    readable       = TRUE)
 
+plot_GO <- dotplot(go_res, showCategory = 20) +
+  ggtitle("GO enrichment – Basal keratinocytes")
 
-try({
-  go_down <- enrichGO(
-    gene = deg_downregulated_entrez,
-    OrgDb = org.Hs.eg.db,
-    keyType = "ENTREZID",
-    ont = "ALL",
-    pAdjustMethod = "BH",
-    pvalueCutoff = 0.01,
-    qvalueCutoff = 0.05,
-    readable = TRUE
-  )
-  
-  PlotDot_GO_DOWN <- dotplot(go_down, showCategory = 20) + ggtitle("GO Enrichment Analysis of Downregulated Genes")
-  PlotDot_GO_DOWN
-  
-})
+# ---------- 3.2 KEGG ----------
+kegg_res <- enrichKEGG(gene         = Basal_entrez,
+                       organism     = "hsa",
+                       pvalueCutoff = 0.05)
 
+plot_KEGG <- dotplot(kegg_res, showCategory = 20) +
+  ggtitle("KEGG pathways – Basal keratinocytes")
 
-# 保存結果並繪製圖表
-try({
-  write.csv(go_up, paste0(Name_ExportFolder_EA,"/", Name_Export,"_EA_GO_Upregulated.csv"))
-  
-  jpeg(paste0(Name_ExportFolder_EA,"/", Name_Export,"_EA_GO_Upregulated.jpg"), width = 500, height = 700)
-  print(PlotDot_GO_UP)
-  dev.off()
-  
-})
+# ---------- 3.3 Reactome ----------
+reac_res <- enrichPathway(gene         = Basal_entrez,
+                          organism     = "human",
+                          pvalueCutoff = 0.05,
+                          readable     = TRUE)
 
+plot_REAC <- dotplot(reac_res, showCategory = 20) +
+  ggtitle("Reactome pathways – Basal keratinocytes")
 
-try({
-  write.csv(go_down,paste0(Name_ExportFolder_EA,"/", Name_Export,"_EA_GO_Downregulated.csv"))
-  
-  jpeg(paste0(Name_ExportFolder_EA,"/", Name_Export,"_EA_GO_Downregulated.jpg"), width = 500, height = 700)
-  print(PlotDot_GO_DOWN)
-  dev.off()
-  
-})
+## ====================== ##
+## 4.  儲存結果與圖檔       ##
+## ====================== ##
+# -- 4.1 表格 --
+write.csv(go_res,   file = file.path(output_dir, paste0(output_prefix, "_GO.csv")))
+write.csv(kegg_res, file = file.path(output_dir, paste0(output_prefix, "_KEGG.csv")))
+write.csv(reac_res, file = file.path(output_dir, paste0(output_prefix, "_Reactome.csv")))
 
+# -- 4.2 點圖（JPG） --
+jpeg(file.path(output_dir, paste0(output_prefix, "_GO.jpg")),    width = 600, height = 800); print(plot_GO);   dev.off()
+jpeg(file.path(output_dir, paste0(output_prefix, "_KEGG.jpg")),  width = 600, height = 800); print(plot_KEGG); dev.off()
+jpeg(file.path(output_dir, paste0(output_prefix, "_Reactome.jpg")), width = 600, height = 800); print(plot_REAC); dev.off()
 
-
-
-#### KEGG 富集分析 ####
-try({
-  kegg_up <- enrichKEGG(
-    gene = deg_upregulated_entrez,
-    organism = 'hsa',
-    pvalueCutoff = 0.05
-  )
-  
-  PlotDot_KEGG_UP <- dotplot(kegg_up, showCategory = 20) + ggtitle("KEGG Pathways of Upregulated Genes")
-  PlotDot_KEGG_UP
-  
-})
-
-
-try({
-  kegg_down <- enrichKEGG(
-    gene = deg_downregulated_entrez,
-    organism = 'hsa',
-    pvalueCutoff = 0.05
-  )
-  
-  PlotDot_KEGG_DOWN <- dotplot(kegg_down, showCategory = 20) + ggtitle("KEGG Pathways of Downregulated Genes")
-  PlotDot_KEGG_DOWN
-  
-  
-})
-
-
-# 保存結果並繪製圖表
-try({
-  write.csv(kegg_up, paste0(Name_ExportFolder_EA,"/", Name_Export,"_EA_KEGG_Upregulated.csv"))
-  
-  jpeg(paste0(Name_ExportFolder_EA,"/", Name_Export,"_EA_KEGG_Upregulated.jpg"), width = 500, height = 700)
-  print(PlotDot_KEGG_UP)
-  dev.off()
-  
-})
-
-
-try({
-  write.csv(kegg_down, paste0(Name_ExportFolder_EA,"/", Name_Export,"_EA_KEGG_Downregulated.csv"))
-  
-  jpeg(paste0(Name_ExportFolder_EA,"/", Name_Export,"_EA_KEGG_Downregulated.jpg"), width = 500, height = 700)
-  print(PlotDot_KEGG_DOWN)
-  dev.off()
-  
-})
-
-
-#### Reactome 富集分析 ####
-try({
-  reactome_up <- enrichPathway(
-    gene = deg_upregulated_entrez,
-    organism = "human",
-    pvalueCutoff = 0.05,
-    readable = TRUE
-  )
-  
-  PlotDot_Reactome_UP <- dotplot(reactome_up, showCategory = 20) + ggtitle("Reactome Pathways of Upregulated Genes")
-  PlotDot_Reactome_UP
-  
-})
-
-
-
-try({
-  reactome_down <- enrichPathway(
-    gene = deg_downregulated_entrez,
-    organism = "human",
-    pvalueCutoff = 0.05,
-    readable = TRUE
-  )
-  
-  PlotDot_Reactome_DOWN <- dotplot(reactome_down, showCategory = 20) + ggtitle("Reactome Pathways of Downregulated Genes")
-  PlotDot_Reactome_DOWN
-  
-})
-
-
-
-
-# 保存結果並繪製圖表
-try({
-  write.csv(reactome_up, paste0(Name_ExportFolder_EA,"/", Name_Export,"_EA_Reactome_Upregulated.csv"))
-  
-  jpeg(paste0(Name_ExportFolder_EA,"/", Name_Export,"_EA_Reactome_Upregulated.jpg"), width = 500, height = 700)
-  print(PlotDot_Reactome_UP)
-  dev.off()
-  
-})
-
-
-try({
-  write.csv(reactome_down, paste0(Name_ExportFolder_EA,"/", Name_Export,"_EA_Reactome_Downregulated.csv"))
-  
-  jpeg(paste0(Name_ExportFolder_EA,"/", Name_Export,"_EA_Reactome_Downregulated.jpg"), width = 500, height = 700)
-  print(PlotDot_Reactome_DOWN)
-  dev.off()
-  
-})
-
-
-
-
-pdf(paste0(Name_ExportFolder_EA,"/", Name_Export,"_EA_DotPlot.pdf"), width = 8, height = 10)
-
-try(print(PlotDot_GO_UP))
-try(print(PlotDot_GO_DOWN))
-try(print(PlotDot_KEGG_UP))
-try(print(PlotDot_KEGG_DOWN))
-try(print(PlotDot_Reactome_UP))
-try(print(PlotDot_Reactome_DOWN))
-
+# -- 4.3 整合 PDF --
+pdf(file.path(output_dir, paste0(output_prefix, "_DotPlots.pdf")), width = 7, height = 9)
+try(print(plot_GO))
+try(print(plot_KEGG))
+try(print(plot_REAC))
 dev.off()
 
+message("✔ ORA completed and files saved to: ", normalizePath(output_dir))
