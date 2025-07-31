@@ -49,12 +49,13 @@ cluster_markers <- FindAllMarkers(
 )
 
 # 2-2. 篩選顯著基因 (FDR < 0.05)，並各取 Top10 畫熱圖
-cluster_markers_sig <- cluster_markers %>% dplyr::filter(p_val_adj < 0.05) # %>% dplyr::filter(avg_log2FC > 0.25)
+cluster_markers_sig <- cluster_markers %>% 
+  dplyr::filter(p_val_adj < 0.05) # %>% dplyr::filter(avg_log2FC > 0.25)
 
 top10_markers.df <- cluster_markers_sig %>%
   group_by(cluster) %>%
   top_n(10, avg_log2FC)
-top10_markers <- top10_markers.df %>%  pull(gene)                       # 取出基因名稱向量
+top10_markers <- top10_markers.df %>%  pull(gene)           # 取出基因名稱向量
 
 DoHeatmap(
   object   = seurat_all_integrated,
