@@ -62,14 +62,15 @@ seurat_obj[["RNA"]] <- JoinLayers(object = seurat_obj[["RNA"]])
 data.input <- GetAssayData(seurat_obj, slot = "data", assay = "RNA")
 meta <- seurat_obj@meta.data
 
-# # 建立 CellChat 物件，這裡以 seurat_clusters 作為群組依據
-# cellchat <- createCellChat(object = data.input, meta = meta, group.by = "seurat_clusters")
+# ## 建立 CellChat 物件，這裡以 seurat_clusters 作為群組依據
+# #Bug# cellchat <- createCellChat(object = data.input, meta = meta, group.by = "seurat_clusters")
+# 
+# # 把原本的 seurat_clusters（例如 "0", "1", "2"）改成 "C0", "C1", ...
+# meta$cellchat_clusters <- paste0("C", as.character(seurat_obj$seurat_clusters))
+# cellchat <- createCellChat(object = data.input, meta = meta, group.by = "cellchat_clusters")
 
-
-# 把原本的 seurat_clusters（例如 "0", "1", "2"）改成 "C0", "C1", ...
-meta$cellchat_clusters <- paste0("C", as.character(seurat_obj$seurat_clusters))
-cellchat <- createCellChat(object = data.input, meta = meta, group.by = "cellchat_clusters")
-
+## 建立 CellChat 物件，這裡以 Cell_Type 作為群組依據
+cellchat <- createCellChat(object = data.input, meta = meta, group.by = "Cell_Type")
 
 ###############################################
 ## Step 3: 指定物種資料庫
@@ -92,8 +93,8 @@ cellchat <- subsetData(cellchat)
 cellchat <- identifyOverExpressedGenes(cellchat)
 cellchat <- identifyOverExpressedInteractions(cellchat)
 
-# 加入蛋白質交互網路（PPI network）
-cellchat <- projectData(cellchat, PPI.human)  # human 為例，mouse 可忽略
+# # 加入蛋白質交互網路（PPI network）
+# cellchat <- projectData(cellchat, PPI.human)  # human 為例，mouse 可忽略
 
 
 ###############################################
