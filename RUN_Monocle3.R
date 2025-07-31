@@ -231,25 +231,29 @@ plot_df <- expr_long |>
 ###############################################################################
 ##  4. ggplot 畫圖 -------------------------------------------------------------
 ###############################################################################
-ggplot(plot_df,
-       aes(x      = pseudotime,
-           y      = expr + 1e-6,               # 避免 log10(0)
-           colour = factor(seurat_cluster))) +
-  geom_point(size = 0.6, alpha = 0.65) +       # 散點
-  geom_smooth(aes(group = 1),                  # 每 facet 一條趨勢線
-              method    = "loess",
-              span      = 0.8,
-              colour    = "black",
-              linewidth = 0.5,
-              se        = FALSE) +
-  scale_y_log10() +                            # 與 monocle3 相同的 log10
-  scale_colour_brewer(palette = "Set1",
-                      name    = "seurat_clusters") +
+p <- ggplot(plot_df,
+            aes(x = pseudotime,
+                y = expr + 1e-6,
+                colour = factor(seurat_cluster))) +
+  geom_point(size = 0.6, alpha = 0.65) +
+  geom_smooth(aes(group = 1), method = "loess",
+              span = 0.8, colour = "black", se = FALSE, linewidth = 0.5) +
+  scale_y_log10() +
+  scale_colour_brewer(palette = "Set1", name = "seurat_clusters") +
   facet_wrap(~gene, ncol = 1, scales = "free_y") +
   theme_classic(base_size = 12) +
-  theme(strip.text.y     = element_text(angle = 0, hjust = 0),
-        legend.position  = "right") +
+  theme(
+    strip.background = element_rect(fill = "#e3e1dc",  # 亮黃色底
+                                    colour = "black",  # 邊框顏色
+                                    linewidth = 0.8),
+    strip.text       = element_text(colour = "black",  # 字體顏色
+                                    face   = "bold"),  # 字型加粗
+    strip.text.y     = element_text(angle = 0, hjust = 0)
+  ) +
   labs(x = "pseudotime", y = "Expression (log10)")
+
+print(p)
+
 
 ###############################################################################
 ##  5. 可選參數 ----------------------------------------------------------------
