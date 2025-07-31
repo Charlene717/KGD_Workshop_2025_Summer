@@ -137,42 +137,24 @@ plot_cells(cds,
 rowData(cds)$gene_short_name <- rownames(cds)   # 若 rowData 尚未有 gene_short_name，需建立
 
 ################################################################################
-## 📦 整理關鍵 fibroblast 基因，分模組記錄於 ciliated_genes
+## 📦 整理關鍵 KC 基因，分模組記錄於 ciliated_genes
 ################################################################################
-ciliated_genes <- c(
-  ## ▶ ECM 組成與膠原蛋白沉積
-  "COL1A1", "COL1A2", "COL3A1", "COL5A1", "FN1", "VCAN", "SPARC",
+ciliated_genes <- list(
+  ## ▶ Basal KC
+    "COL17A1","KRT15","KRT14","KRT5","DST","CDH3","ITGB1","ITGB4",
+    "TP63","POSTN","CXCL14","S100A2","SYT8","CYR61",
+    
+  ## ▶ Spinous KC
+    "KRT1","KRT10","KRTDAP","KRT6A","KRT6B","KRT6C","KRT16",
+    "DSG1","CDH1","SBSN","LY6D",
   
-  ## ▶ 肌成纖維細胞標誌（Myofibroblast markers）
-  "ACTA2", "TAGLN", "POSTN", "LOX", "PLOD2",
-  
-  ## ▶ 細胞增生與訊號傳導（Growth factor signaling）
-  "PDGFRB", "PDGFRA", "IGF1", "FGF2", "EGF", "TGFBI",
-  
-  ## ▶ TGF-β pathway
-  "TGFB1", "TGFBR1", "TGFBR2", "SMAD2", "SMAD3",
-  
-  ## ▶ Wnt/β-catenin pathway
-  "WNT5A", "CTNNB1", "AXIN2",
-  
-  ## ▶ 細胞黏附與遷移相關
-  "ITGB1",
-  
-  ## ▶ 基質重塑與降解（ECM remodeling enzymes）
-  "MMP2", "MMP9", "TIMP1",
-  
-  ## ▶ 免疫與發炎因子
-  "IL6", "IL11", "CCL2", "CXCL12", "CXCL14",
-  
-  ## ▶ 血管新生與環境重塑
-  "VEGFA", "ANGPTL4",
-  
-  ## ▶ 幹細胞樣與纖維母細胞 progenitor 標誌
-  "THY1", "CD34"
-)
+  ## ▶ Granular KC
+    "LOR","FLG","SPINK5","CDSN","DSC1","SLURP1","KLK7","IVL",
+    "KRT1","KRT10","TGM3","FLG2","C10orf68","H0PX","CNFN",
+    "CALML5","KRT2"
+) %>% unique()
 
-
-# ciliated_genes <- c("PDGFRA", "LUM", "DCN", "COL1A1", "COL3A1", "COL5A1", "COL6A3")
+ciliated_genes <- c("KRT15", "KRT14", "POSTN", "CXCL14", "S100A2", "KRT1", "KRT10")
 # ➤ 畫出這些基因在 UMAP 上的分佈情形（可加 show_trajectory_graph = TRUE）
 plot_cells(cds,
            genes = ciliated_genes,
@@ -181,36 +163,27 @@ plot_cells(cds,
 
 
 
-
-
 ####################################################################################################
 
-
-
 ################################################################################
-## ⏳ 特定模組的 pseudotime 表現動態：以 ECM 基因為例
+## 🧪 測試基因集：任意子集的 pseudotime 表現
 ################################################################################
-
-# ➤ 提取 ECM gene 對應的 CDS
-genes_ECM <- c("COL1A1", "COL1A2", "COL3A1", "COL5A1", "FN1", "VCAN", "SPARC")
-ECM_lineage_cds <- cds[rowData(cds)$gene_short_name %in% genes_ECM, ]
-ECM_lineage_cds <- order_cells(ECM_lineage_cds)
-
-# ➤ 畫出 ECM 模組在 pseudotime 上的表現變化
-plot_genes_in_pseudotime(ECM_lineage_cds,
-                         color_cells_by = "seurat_clusters",
-                         min_expr = 0.5)
-
-
-
-################################################################################
-## 🧪 測試基因集：任意子集的 pseudotime 表現（debug 用）
-################################################################################
-genes_Test <- c("IL6", "PLOD2", "TGFB1", "COL5A1")  # ← "TGGFB1" 更正為 "TGFB1"
+genes_Test <-  c("KRT15", "KRT14", "POSTN", "CXCL14", "S100A2", "KRT1", "KRT10")  # ← "TGGFB1" 更正為 "TGFB1"
 Test_lineage_cds <- cds[rowData(cds)$gene_short_name %in% genes_Test, ]
 Test_lineage_cds <- order_cells(Test_lineage_cds)
 
 plot_genes_in_pseudotime(Test_lineage_cds,
+                         cell_size = 3,
                          color_cells_by = "seurat_clusters",
-                         min_expr = 0.5)
+                         min_expr = NULL)
+
+plot_genes_in_pseudotime(
+  Test_lineage_cds,
+  color_cells_by = "seurat_clusters",
+  min_expr       = 0,           # 或小門檻
+  vertical_jitter= 0.05,
+  cell_size      = 0.8
+)
+
+
 
