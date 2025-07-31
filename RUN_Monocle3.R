@@ -68,7 +68,7 @@ plot_cells(cds, color_cells_by = "seurat_clusters")
 
 
 ############################################################
-##  重新計算 cluster 與 partition，再學習 principal graph ##
+##  重新計算 cluster 與 partition，之後再學習 principal graph ##
 ############################################################
 
 cds <- cluster_cells(              # 1️⃣ 重新計算 k-NN → Leiden → partition
@@ -77,6 +77,13 @@ cds <- cluster_cells(              # 1️⃣ 重新計算 k-NN → Leiden → pa
   resolution = 1e-3                # 視需要調整；只是為了產生 partition
 )
 
+
+################################################################################
+## 📈 進行 Monocle3 的 graph 重建與 Pseudotime 計算
+################################################################################
+# # cds <- learn_graph(cds)     # 建構細胞之間的拓樸結構
+# cds <- learn_graph(cds, use_partition = FALSE, close_loop = FALSE) # 建構細胞之間的拓樸結構
+
 cds <- learn_graph(                # 2️⃣ 現在 partitions 長度吻合 → OK
   cds,
   use_partition = TRUE,            # 預設；確保不同 partition 不互連
@@ -84,12 +91,6 @@ cds <- learn_graph(                # 2️⃣ 現在 partitions 長度吻合 → 
 )
 
 
-
-################################################################################
-## 📈 進行 Monocle3 的 graph 重建與 Pseudotime 計算
-################################################################################
-# cds <- learn_graph(cds)     # 建構細胞之間的拓樸結構
-cds <- learn_graph(cds, use_partition = FALSE, close_loop = FALSE) # 建構細胞之間的拓樸結構
 cds <- order_cells(cds)     # 排定 pseudotime（可互動式選擇 root cell）
 
 
