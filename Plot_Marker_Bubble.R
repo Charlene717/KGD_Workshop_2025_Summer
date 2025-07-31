@@ -84,6 +84,48 @@ p <- ggplot(plot_df, aes(x = cluster, y = gene_ct)) +
   )
 
 p
+
+
+###############################################################################
+## 4. 畫泡泡圖（x = gene, facet = CellType；y = Seurat cluster）
+###############################################################################
+library(ggplot2)
+
+# 為了在 facet 中保持 CellType 順序，可先設定 factor levels
+plot_df$CellType <- factor(plot_df$CellType, levels = names(marker_sets_KGD))
+
+# gene 順序直接沿用在各 CellType 內的原始順序即可
+plot_df$gene <- factor(plot_df$gene,
+                       levels = unique(gene_present))   # 固定整體順序
+
+# cluster 改成 factor，確保 y 軸順序由上而下 0,1,2…
+plot_df$cluster <- factor(plot_df$cluster,
+                          levels = sort(unique(plot_df$cluster)))
+
+p <- ggplot(plot_df, aes(x = gene, y = cluster)) +
+  geom_point(aes(size = pct_exp, colour = avg_exp)) +
+  scale_colour_gradient(low = "white", high = "darkred") +
+  scale_size(range = c(0, 8)) +
+  facet_grid(. ~ CellType, scales = "free_x", space = "free_x", switch = "x") +
+  labs(
+    x      = NULL,                 # x 軸留白；CellType 會顯示在 facet strip
+    y      = "Seurat cluster",
+    size   = "% cells",
+    colour = "Avg expr",
+    title  = "KGD 皮膚細胞 Marker Bubble Plot"
+  ) +
+  theme_bw() +
+  theme(
+    strip.placement   = "outside",             # strip 移到外側（上方）
+    strip.text.x.top  = element_text(size = 9, face = "bold"),
+    axis.text.x       = element_text(angle = 90, vjust = 0.5, hjust = 1, size = 5),
+    axis.text.y       = element_text(size = 7),
+    panel.spacing.x   = unit(0.2, "lines"),    # 壓縮 CellType 之間間距
+    plot.title        = element_text(hjust = 0.5, size = 24)
+  )
+
+p
+
 ###############################################################################
 ## 5. 匯出
 ###############################################################################
