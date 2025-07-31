@@ -9,7 +9,7 @@
 ##########################################################
 ## Step 1：安裝與載入套件
 ##########################################################
-if (!require("Seurat"))        { install.packages("Seurat");         library(Seurat) }     # ↪ 若尚未安裝 Seurat 就自動安裝；安裝後載入
+if (!require("Seurat"))        { install.packages("Seurat");         library(Seurat) }     # ↪ 單細胞分析主套件
 if (!require("tidyverse"))     { install.packages("tidyverse");      library(tidyverse) }  # ↪ tidyverse: dplyr/ggplot2 等整合工具，方便資料處理
 if (!require("ggplot2"))       { install.packages("ggplot2");        library(ggplot2) }    # ↪ 畫圖核心：CellChat 某些函式需依賴 ggplot2
 if (!require("patchwork"))     { install.packages("patchwork");      library(patchwork) }  # ↪ 組合多圖用，常見於 Seurat/CellChat 視覺化
