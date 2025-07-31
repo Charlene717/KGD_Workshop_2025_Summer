@@ -176,7 +176,7 @@ seurat_all_integrated <- ScaleData(
 seurat_all_integrated <- RunPCA(seurat_all_integrated, npcs = 50) %>%
   RunUMAP(dims = 1:30) %>%
   FindNeighbors(dims = 1:30) %>%
-  FindClusters(resolution = 0.3)
+  FindClusters(resolution = 0.8)
 
 # 整合後的 UMAP：檢查不同批次是否成功重疊
 DimPlot(seurat_all_integrated, reduction = "umap") +
