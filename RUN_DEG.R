@@ -188,6 +188,31 @@ for (cl in names(deg_list)) {
   print(p)           # RStudio / R GUI 會即時顯示圖
 }
 
+### 輸出 gene list
+## ── 前置：若尚未載入 tidyverse / purrr，請自行載入 ──────────────────────────
+library(dplyr)
+library(purrr)
+
+## —— 先把無結果的 cluster 剔除 —— -------------------------------
+valid_deg <- keep(
+  deg_list,
+  ~ !is.null(.x) && nrow(.x) > 0        # 保留非 NULL 且至少 1 row 的元素
+)
+
+## —— 取各 cluster 前 10 基因，轉成 "cluster: geneA, …" 字串 —— -----
+top10_lines <- imap_chr(
+  valid_deg,
+  function(df, cl) {
+    df %>%
+      arrange(p_val_adj, desc(abs(avg_log2FC))) %>%   # 依 p 值、FC 排序
+      slice_head(n = 10) %>%
+      { paste0(cl, ": ", paste(.$gene, collapse = ", ")) }
+  }
+)
+
+## —— 輸出 txt（每列一個 cluster） —— -------------------------------
+writeLines(top10_lines, "deg_top10_genes_by_cluster.txt")
+
 ###############################################################################
 # End of Script  --------------------------------------------------------------
 # • 如需輸出結果到 CSV / Excel，可在 deg_list 迴圈內用 write.csv() 等函數
