@@ -106,16 +106,9 @@ netVisual_circle(cellchat@net$count, vertex.weight = groupSize, weight.scale = T
 netVisual_aggregate(cellchat, signaling = "TGFb", layout = "circle")
 
 
-###############################################
-## Step 7: pathway 特定通訊熱圖
-###############################################
-
-# 繪製所有通訊路徑的細胞通訊角色熱圖（發送與接收）
-netAnalysis_signalingRole_heatmap(cellchat, pattern = "both")
-
 
 ###############################################
-## Step 8: 推論細胞在通訊中的角色（中心性分析）
+## Step 7: 推論細胞在通訊中的角色（中心性分析）
 ###############################################
 
 # 計算中心性（例如傳送者、接收者）
@@ -124,6 +117,17 @@ cellchat <- netAnalysis_computeCentrality(cellchat, slot.name = "netP")
 # 顯示特定 pathway 的角色（例：CXCL）
 netAnalysis_signalingRole_network(cellchat, signaling = "CXCL")
 
+
+###############################################
+## Step 8: pathway 特定通訊熱圖
+###############################################
+
+# 繪製所有通訊路徑的細胞通訊角色熱圖（發送與接收）
+netAnalysis_signalingRole_heatmap(cellchat, pattern = "all")
+
+netAnalysis_signalingRole_heatmap(cellchat, pattern = "outgoing") + 
+  netAnalysis_signalingRole_heatmap(cellchat, pattern = "incoming")
+ 
 
 ###############################################
 ## Step 9: 模式識別（Pattern discovery）
