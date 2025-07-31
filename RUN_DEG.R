@@ -42,13 +42,15 @@ DoHeatmap(seurat_all_integrated, features = top10_markers$gene) + NoLegend()
 
 
 #################################################################################
+if(!require('Seurat'))         { install.packages('Seurat');         library(Seurat) }
+if(!require('tidyverse'))      { install.packages('tidyverse');      library(tidyverse) }
+if(!require('patchwork'))      { install.packages('patchwork');      library(patchwork) }
+if(!require('ggplot2'))        { install.packages('ggplot2');        library(ggplot2) }
+if(!require('dplyr'))          { install.packages('dplyr');          library(dplyr) }
 
 
-library(Seurat)
-library(ggplot2)
-library(dplyr)
-library(patchwork)
 
+DefaultAssay(seurat_all_integrated) <- "RNA"
 # 確保 cluster 編號存在
 Idents(seurat_all_integrated) <- "seurat_clusters"
 clusters <- levels(seurat_all_integrated)
