@@ -159,7 +159,7 @@ for (cl in clusters) {
 
 ###############################################################################
 # 4. 火山圖 (Volcano plot)：直觀呈現 DEG 結果  -------------------------------
-#    • 每個 cluster 各輸出一張火山圖；標註最顯著前 10 genes
+#    • 每個 cluster 各輸出一張火山圖；標註最顯著前 25 genes
 ###############################################################################
 for (cl in names(deg_list)) {
   deg <- deg_list[[cl]]
@@ -182,8 +182,8 @@ for (cl in names(deg_list)) {
     scale_colour_manual(
       values = c("Up" = "red", "Down" = "blue", "Not Sig" = "grey70")
     ) +
-    geom_text_repel(                                           # 標註前 10 顯著基因
-      data         = slice_head(arrange(deg, p_val_adj), n = 10),
+    geom_text_repel(                                           # 標註前 25 顯著基因
+      data         = slice_head(arrange(deg, p_val_adj), n = 25),
       aes(label    = gene),
       size         = 3,
       max.overlaps = 20
@@ -210,18 +210,18 @@ valid_deg <- keep(
 )
 
 ## —— 取各 cluster 前 10 基因，轉成 "cluster: geneA, …" 字串 —— -----
-top10_lines <- imap_chr(
+top25_lines <- imap_chr(
   valid_deg,
   function(df, cl) {
     df %>%
       arrange(p_val_adj, desc(abs(avg_log2FC))) %>%   # 依 p 值、FC 排序
-      slice_head(n = 10) %>%
+      slice_head(n = 25) %>%
       { paste0(cl, ": ", paste(.$gene, collapse = ", ")) }
   }
 )
 
 ## —— 輸出 txt（每列一個 cluster） —— -------------------------------
-writeLines(top10_lines, "deg_top10_genes_by_cluster.txt")
+writeLines(top25_lines, "deg_top25_genes_by_cluster.txt")
 
 ###############################################################################
 # End of Script  --------------------------------------------------------------
