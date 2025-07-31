@@ -1,168 +1,151 @@
-#############################################################
-##  Quick GSEA Pipeline – Teaching Example                 ##
-#############################################################
-
-## ---------------- (0) 套件載入 ---------------- ##
-pkgs <- c("clusterProfiler", "enrichplot", "msigdbr",
-          "org.Hs.eg.db", "tidyverse", "ggplot2")
-for (p in pkgs) {
-  if (!requireNamespace(p, quietly = TRUE)) {
-    if (p %in% c("org.Hs.eg.db", "msigdbr", "clusterProfiler", "enrichplot"))
-      BiocManager::install(p)
-    else
-      install.packages(p)
+############################################################
+##  教學版 GSEA（含關鍵字經典曲線） – v2025-07-31        ##
+############################################################
+## 必裝：clusterProfiler >= 4.0，enrichplot >= 1.14
+pkgs <- c("clusterProfiler","enrichplot","msigdbr",
+          "org.Hs.eg.db","tidyverse","patchwork","ggplot2")
+for (p in pkgs){
+  if (!requireNamespace(p, quietly = TRUE)){
+    if (p %in% c("clusterProfiler","enrichplot","msigdbr","org.Hs.eg.db")){
+      BiocManager::install(p, ask = FALSE)
+    } else install.packages(p, quiet = TRUE)
   }
   library(p, character.only = TRUE)
 }
 
-## ---------------- (1) 基本設定 ---------------- ##
-cell_type  <- "Basal keratinocytes"   # ← 換成目標群別
-score_col  <- "avg_log2FC"            # ← 用哪個欄位做排序
-output_dir <- "."                     # ← 輸出資料夾（"." = 工作目錄）
-output_pre <- gsub("\\s+", "_", cell_type)
+## ---------- 0. 基本參數 ---------- ##
+cell_type      <- "Basal keratinocytes"        # 想分析的群
+score_col      <- "avg_log2FC"                 # 排序分數欄
+output_dir     <- "."                          # 輸出目錄
+output_prefix  <- gsub("\\s+","_",cell_type)   # 檔名前綴
+species        <- "Homo sapiens"               # 物種
+OrgDb          <- org.Hs.eg.db
 
-## ---------------- (2) 準備 ranking vector ---------------- ##
-# 2-1 取該群的 DEG data.frame
-deg_df <- deg_list[[cell_type]]
 
-# 2-2 (可選) 若只想保留顯著差異基因，可在此加 p-value 篩選
-# deg_df <- deg_df %>% filter(p_val_adj < 0.05)
+## ---------- 1. 取該群 DE 資料框 ---------- ##
+deg_df <- deg_list[[cell_type]] |>
+  dplyr::select(gene, !!score_col) |>
+  rename(Gene = gene,
+         log2FoldChange = !!score_col)
 
-# 2-3 基因 Symbol → ENTREZ ID
-sym2ent <- bitr(deg_df$gene,
-                fromType = "SYMBOL",
+
+## ---------- 2. SYMBOL → ENTREZ，建排名向量 ---------- ##
+sym2ent <- bitr(deg_df$Gene, fromType = "SYMBOL",
                 toType   = "ENTREZID",
-                OrgDb    = org.Hs.eg.db,
+                OrgDb    = OrgDb,
                 drop     = FALSE)
 
 deg_df <- left_join(deg_df, sym2ent,
-                    by = c("gene" = "SYMBOL")) %>% drop_na(ENTREZID)
+                    by = c("Gene" = "SYMBOL")) |>
+  drop_na(ENTREZID) |>
+  distinct(ENTREZID, .keep_all = TRUE)  # ENTREZID 唯一
 
-# 2-4 建 gene_rank：named numeric 向量
-# gene_rank <- deframe(deg_df %>%                   # 取兩欄組成向量
-#                       dplyr::select(ENTREZID, !!score_col)) 
-# gene_rank <- sort(gene_rank, decreasing = TRUE)   # 由大到小排序
-# 假設 deg_df 仍是你在步驟 (2) 建立的資料框
-gene_rank <- setNames(
-  as.numeric(deg_df[[score_col]]),   # ← 這一行務必 as.numeric()
-  deg_df$ENTREZID
-)
-gene_rank <- sort(gene_rank, decreasing = TRUE)
-
-# Double-check
-str(gene_rank)        # 應顯示 "Named num [1:...]"，名字是 ENTREZID
-sum(is.na(gene_rank)) # 應為 0
+gene_rank <- deg_df$log2FoldChange
+names(gene_rank) <- deg_df$ENTREZID           # **保持 numeric 名稱**
+gene_rank       <- sort(gene_rank, decreasing = TRUE)
 
 
-## ---------------- (3) 取得 MSigDB 基因集 ---------------- ##
-species <- "Homo sapiens"
-
+## ---------- 3. MSigDB TERM2GENE（數值型 ENTREZ） ---------- ##
 gmt_df <- bind_rows(
-  msigdbr(species, category = "H"),   # Hallmark
-  # msigdbr(species, category = "C2"),  # Canonical pathways
-  # msigdbr(species, category = "C3"),  # TF targets
-  # msigdbr(species, category = "C7")   # Immunologic
-) %>% dplyr::select(gs_name, ENTREZID = entrez_gene) %>% distinct()
+  msigdbr(species, category="H"),    # Hallmark
+  # msigdbr(species, category="C2"),   # Canonical pathways
+  # msigdbr(species, category="C3"),   # TF targets
+  # msigdbr(species, category="C7")    # Immunologic
+) |>
+  dplyr::select(gs_name, ENTREZID = entrez_gene) |>
+  distinct()                            # ENTREZID 仍為 integer
 
-## ---------------- (4) 執行 GSEA ---------------- ##
+
+## ---------- 4. 執行 GSEA（不過濾） ---------- ##
 gsea_res <- GSEA(geneList     = gene_rank,
                  TERM2GENE    = gmt_df,
-                 pvalueCutoff = 1,          # 不過濾，後續再篩
+                 pvalueCutoff = 1,
                  minGSSize    = 10,
                  maxGSSize    = 500,
                  verbose      = FALSE)
 
-## ---------------- (5) 基本可視化 ---------------- ##
-# 5-1 NES dotplot（前 30 條）
-plot_dot <- dotplot(gsea_res, showCategory = 30) +
-  ggtitle(paste("GSEA –", cell_type))
 
-# 5-2 Ridgeplot 總覽
-plot_ridge <- ridgeplot(gsea_res, showCategory = 30) +
+## ---------- 5. dotplot / ridgeplot 總覽 ---------- ##
+dot_top30   <- dotplot(gsea_res, showCategory = 30) +
+  ggtitle(paste("GSEA –", cell_type))
+ridge_top30 <- ridgeplot(gsea_res, showCategory = 30) +
   ggtitle(paste("GSEA ridgeplot –", cell_type))
 
-## ---------------- (6) 輸出結果 ---------------- ##
-# 6-1 CSV
-write.csv(gsea_res@result,
-          file = file.path(output_dir,
-                           paste0(output_pre, "_GSEA_MSigDB.csv")),
-          row.names = FALSE)
-
-# 6-2 JPG 圖檔
-ggsave(file.path(output_dir, paste0(output_pre, "_GSEA_dotplot.jpg")),
-       plot_dot, width = 8, height = 14, dpi = 300)
-ggsave(file.path(output_dir, paste0(output_pre, "_GSEA_ridgeplot.jpg")),
-       plot_ridge, width = 8, height = 14, dpi = 300)
-
-# 6-3 PDF 整合
-pdf(file.path(output_dir, paste0(output_pre, "_GSEA_plots.pdf")),
-    width = 8, height = 14)
-print(plot_dot)
-print(plot_ridge)
-dev.off()
+ggsave(file.path(output_dir,
+                 paste0(output_prefix,"_GSEA_dotplot.jpg")),
+       dot_top30, width = 7, height = 12, dpi = 300)
+ggsave(file.path(output_dir,
+                 paste0(output_prefix,"_GSEA_ridgeplot.jpg")),
+       ridge_top30, width = 7, height = 12, dpi = 300)
 
 
-##############################################
-## (7) 依關鍵字產經典 GSEA 曲線圖 (可選)   ##
-##############################################
+## ---------- 6. 關鍵字經典曲線 ---------- ##
+kw_vec        <- c("NFKB","TNFA","WNT","TGFB")   # 自訂關鍵字
+max_term_plot <- 10                              # 最多畫幾條
 
-## --- 使用者自訂 --- ##
-kw_vec       <- c("NFKB", "WNT", "TGFB", "TNFA")  # ← 關鍵字 (不分大小寫)
-max_term_plot <- 10                       # ← 最多畫幾條；Inf = 全部
-
-## -------- (7-1) 篩選 term -------------- ##
-# 把 ID 轉大寫再比對關鍵字
-gsea_tbl <- gsea_res@result
-hit_tbl  <- gsea_tbl %>%
+## 6-1 找出符合關鍵字的 term
+hit_tbl <- gsea_res@result |>
   filter(str_detect(toupper(ID),
-                    paste(kw_vec, collapse = "|"))) %>%
-  arrange(p.adjust) %>%        # 依調整後 p 值排序
+                    paste(kw_vec, collapse = "|"))) |>
+  arrange(p.adjust) |>
   slice_head(n = max_term_plot)
 
-if (nrow(hit_tbl) == 0) {
+if (nrow(hit_tbl) == 0){
   warning("⚠ 找不到符合關鍵字的 pathway；請檢查 kw_vec")
 } else {
   
-  ## ------ (7-2) 繪製 gseaplot2 -------- ##
-  library(patchwork)    # 用於排版
+  ## 6-2 產生 gseaplot2（無 combine 參數）
+  library(patchwork)
   
-  gsea_plots <- vector("list", nrow(hit_tbl))
-  names(gsea_plots) <- hit_tbl$ID
-  
-  for (i in seq_len(nrow(hit_tbl))) {
-    term_id <- hit_tbl$ID[i]
-    
-    gsea_plots[[i]] <- gseaplot2(
-      gsea_res,
-      geneSetID    = term_id,
-      color        = "steelblue",
-      base_size    = 11,
-      ES_geom      = "line",
-      pvalue_table = TRUE   # 右上顯示 NES / p.adj
-    ) +
-      ggtitle(term_id) +
-      theme(plot.title = element_text(hjust = .5, face = "bold"))
+  safe_gseaplot <- function(gsea_obj, term_id,
+                            line_col = "steelblue"){
+    tryCatch({
+      p <- enrichplot::gseaplot2(
+        gsea_obj,
+        geneSetID    = term_id,
+        ES_geom      = "line",
+        pvalue_table = TRUE,
+        color        = line_col)
+      
+      ## enrichplot <1.21 回傳 ggplot / list，
+      ## ≥1.21 回傳 patchwork – 用 wrap_plots 統一
+      if (!inherits(p, "patchwork"))
+        p <- patchwork::wrap_plots(p, ncol = 1)
+      
+      p + ggtitle(term_id) +
+        theme(plot.title = element_text(
+          hjust = .5, face = "bold"))
+    },
+    error = function(e){
+      message("❗ 無法繪製 ", term_id, "：", e$message)
+      NULL
+    })
   }
   
-  ## ------ (7-3) 儲存 ------------------- ##
-  # ① PDF：每頁一圖
+  gsea_plots <- lapply(hit_tbl$ID,
+                       safe_gseaplot,
+                       gsea_obj = gsea_res)
+  names(gsea_plots) <- hit_tbl$ID
+  gsea_plots <- gsea_plots[!sapply(gsea_plots, is.null)]
+  
+  ## 6-3 輸出 PDF（每頁 1 圖）
   pdf(file.path(output_dir,
-                paste0(output_pre, "_GSEA_keywordCurves.pdf")),
-      width = 7, height = 5)
+                paste0(output_prefix,
+                       "_GSEA_keywordCurves.pdf")),
+      width = 10, height = 8)
   for (p in gsea_plots) print(p)
   dev.off()
   
-  # ② 個別 PNG（300 dpi）
-  for (nm in names(gsea_plots)) {
+  ## 6-4 輸出個別 PNG
+  for (nm in names(gsea_plots)){
     ggsave(file.path(output_dir,
-                     paste0(output_pre, "_GSEA_", nm, ".png")),
-           plot   = gsea_plots[[nm]],
-           width  = 6, height = 5, dpi = 300)
+                     paste0(output_prefix,
+                            "_GSEA_", nm, ".png")),
+           gsea_plots[[nm]],
+           width = 10, height = 8, dpi = 300)
   }
   
   cat("✔ 已輸出", length(gsea_plots),
-      "張關鍵字 GSEA 曲線圖至：", normalizePath(output_dir), "\n")
+      "張關鍵字 GSEA 曲線圖至：",
+      normalizePath(output_dir), "\n")
 }
-
-
-cat("🎉 GSEA finished!  結果已存於：", normalizePath(output_dir), "\n")
