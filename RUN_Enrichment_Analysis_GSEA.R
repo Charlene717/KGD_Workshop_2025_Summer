@@ -40,7 +40,7 @@ deg_df <- left_join(deg_df, sym2ent,
 
 # 2-4 建 gene_rank：named numeric 向量
 gene_rank <- deframe(deg_df %>%                   # 取兩欄組成向量
-                       select(ENTREZID, !!score_col)) 
+                      dplyr::select(ENTREZID, !!score_col)) 
 gene_rank <- sort(gene_rank, decreasing = TRUE)   # 由大到小排序
 
 ## ---------------- (3) 取得 MSigDB 基因集 ---------------- ##
@@ -48,10 +48,10 @@ species <- "Homo sapiens"
 
 gmt_df <- bind_rows(
   msigdbr(species, category = "H"),   # Hallmark
-  msigdbr(species, category = "C2"),  # Canonical pathways
-  msigdbr(species, category = "C3"),  # TF targets
-  msigdbr(species, category = "C7")   # Immunologic
-) %>% select(gs_name, ENTREZID = entrez_gene) %>% distinct()
+  # msigdbr(species, category = "C2"),  # Canonical pathways
+  # msigdbr(species, category = "C3"),  # TF targets
+  # msigdbr(species, category = "C7")   # Immunologic
+) %>% dplyr::select(gs_name, ENTREZID = entrez_gene) %>% distinct()
 
 ## ---------------- (4) 執行 GSEA ---------------- ##
 gsea_res <- GSEA(geneList     = gene_rank,
@@ -79,13 +79,13 @@ write.csv(gsea_res@result,
 
 # 6-2 JPG 圖檔
 ggsave(file.path(output_dir, paste0(output_pre, "_GSEA_dotplot.jpg")),
-       plot_dot, width = 6, height = 8, dpi = 300)
+       plot_dot, width = 8, height = 14, dpi = 300)
 ggsave(file.path(output_dir, paste0(output_pre, "_GSEA_ridgeplot.jpg")),
-       plot_ridge, width = 6, height = 8, dpi = 300)
+       plot_ridge, width = 8, height = 14, dpi = 300)
 
 # 6-3 PDF 整合
 pdf(file.path(output_dir, paste0(output_pre, "_GSEA_plots.pdf")),
-    width = 7, height = 9)
+    width = 8, height = 14)
 print(plot_dot)
 print(plot_ridge)
 dev.off()
