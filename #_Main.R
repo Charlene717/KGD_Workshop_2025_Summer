@@ -71,7 +71,8 @@ source("RUN_DEG.R")
 
 
 #### Enrichment Analysis ####
-
+source("RUN_Enrichment_Analysis_ORA.R")
+source("RUN_Enrichment_Analysis_GSEA.R")
 
 
 #### CellChat Analysis ####
@@ -79,7 +80,7 @@ source("RUN_CellChat.R")
 
 
 #### Trajectory Analysis ####
-source("RUN_Trajectory_Analysis_Monocle2.R")
+source("RUN_Trajectory_Analysis_Monocle3.R")
 
 
 
@@ -96,3 +97,13 @@ writeLines(capture.output(sessionInfo()), paste0(Name_ExportFolder, "/", Name_Ex
 sessionInfo()  # 亦於 Console 顯示，方便即時檢查
 
 
+#### Export loupeR ####
+if(Set_Run_loupeR){
+  if (!require('loupeR')) {remotes::install_github("10xGenomics/loupeR"); library(loupeR)}
+  loupeR::setup()
+  
+  try({seurat_all_integrated$CELL <- NULL})
+  create_loupe_from_seurat(seurat_all_integrated, 
+                           output_name = paste0(Name_ExportFolder,"/", Name_Export,""))
+  
+}
