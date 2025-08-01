@@ -37,7 +37,7 @@ options(future.globals.maxSize = 200 * 1024^3)  # ≈ 200 GB，防止「記憶�
 # 要先快速檢查聚類合理性、做示範熱圖: integrated + FindAllMarkers()
 # 新版: 想找出「每個樣本都適用」的穩定 Marker: FindConservedMarkers()
 
-DefaultAssay(seurat_all_integrated) <- "integrated"  # 指向整合矩陣
+DefaultAssay(seurat_all_integrated) <- "RNA"  # 指向整合矩陣
 Idents(seurat_all_integrated)       <- "seurat_clusters"  # 設定目前分群
 
 # 2-1. FindAllMarkers：找出各群特異基因 (只保留上調基因)
