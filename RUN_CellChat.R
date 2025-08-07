@@ -16,7 +16,7 @@ if (!require("patchwork"))     { install.packages("patchwork");      library(pat
 if (!require("future"))        { install.packages("future");         library(future) }     # ↪ 提供平行運算 (multisession) ，加速大型計算
 
 if (!require("remotes"))       { install.packages("remotes");        library(remotes) }    # ↪ 從 GitHub 安裝套件的輔助工具
-if (!requireNamespace("CellChat", quietly = TRUE)) {
+if (!require("CellChat", quietly = TRUE)) {
   remotes::install_github("sqjin/CellChat")                           # ↪ 從 GitHub 安裝最新版 CellChat
   library(CellChat)                                                   # ↪ 載入 CellChat 套件
 }
